@@ -23,13 +23,15 @@ int main(void)
     gethostname(HOSTNAME, HOST_NAME_MAX + 1);
 
     // Printing intro
-    printf("WELCOME TO A-SHELL!\n\n");
+    printf("\nWELCOME TO A-SHELL!\n\n");
 
     // Core of the program - the infinite loop accepting commands as input
     while (1)
     {
-        // Printing username, hostname and path
+        // Printing username, hostname and path in color red
+        printf("\033[1;31m");
         printf("<%s@%s:~> ", USERNAME, HOSTNAME);
+        printf("\033[0m"); 
 
         // Taking command as input
         scanf("%[^\n]s", INPUTSTRING);
