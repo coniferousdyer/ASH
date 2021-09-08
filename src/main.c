@@ -16,7 +16,7 @@ int main(void)
     char disposedCharacter;
 
     // The array containing the command-line arguments entered
-    char *args[MAX_ARG_NO];
+    char *args[MAX_ARG_NO + 1];
 
     // Obtaning username and hostname
     getlogin_r(USERNAME, LOGIN_NAME_MAX + 1);
@@ -51,6 +51,12 @@ int main(void)
             token = strtok(NULL, " ");
             ++argc;
         }
+
+        // Null-terminating the array
+        args[argc] = NULL;
+
+        // Executing the command
+        execCommand(args, argc);
     }
 
     return 0;

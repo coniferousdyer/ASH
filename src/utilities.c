@@ -1,5 +1,8 @@
 #include "header_files/utilities.h"
+#include <unistd.h>
+#include <stdio.h>
 #include <string.h>
+#include <sys/wait.h>
 
 // Function to obtain input from user and format it to give us the command
 void parseInput(char *inputString, char *parsedString)
@@ -38,4 +41,35 @@ void parseInput(char *inputString, char *parsedString)
     }
 
     parsedString[len] = '\0';
+}
+
+// Function to execute the corresponding command
+void execCommand(char *args[], int argc)
+{
+    // If nothing was entered
+    if (argc == 0)
+        return;
+
+    // Create a new process
+    pid_t pid = fork();
+
+    if (pid < 0)
+    {
+        printf("ERROR: An error occurred while executing the command. Please try again.");
+        return;
+    }
+
+    if (pid == 0)
+    {
+        // Executing the given command, replacing the address space of the child process
+        if (execvp(args[0], args))
+            printf("ERROR: The command does not exist. Please try again.\n");
+    }
+    else
+    {
+        int STATUS;
+
+        // Wait for the child process to terminate
+        wait(&STATUS);
+    }
 }
