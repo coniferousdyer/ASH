@@ -10,6 +10,7 @@ char USERNAME[LOGIN_NAME_MAX + 1];
 char INPUTSTRING[MAX_COMMAND_LENGTH + 1];
 char COMMANDSTRING[MAX_COMMAND_LENGTH + 1];
 char PATH[MAX_PATH_LENGTH + 1];
+char HOME[MAX_PATH_LENGTH + 1];
 
 int main(void)
 {
@@ -22,7 +23,8 @@ int main(void)
     // Obtaning username, hostname and path of current working directory (the home directory for this shell)
     getlogin_r(USERNAME, LOGIN_NAME_MAX + 1);
     gethostname(HOSTNAME, HOST_NAME_MAX + 1);
-    char *HOME = getcwd(PATH, MAX_PATH_LENGTH + 1);
+    getcwd(PATH, MAX_PATH_LENGTH + 1);
+    getcwd(HOME, MAX_PATH_LENGTH + 1);    
 
     // Printing intro
     printf("\nWELCOME TO A-SHELL!\n\n");
@@ -32,8 +34,17 @@ int main(void)
     {
         // Printing username, hostname and path in color red
         printf("\033[1;31m");
-        printf("<%s@%s:~> ", USERNAME, HOSTNAME);
-        printf("\033[0m"); 
+
+        // Deciding whether relative or absolute path is to be used by comparing the first strlen(HOME) characters
+        if (strncmp(PATH, HOME, strlen(HOME)) == 0)
+        {
+            char *relativePath = &PATH[strlen(HOME)];
+            printf("<%s@%s:~%s> ", USERNAME, HOSTNAME, relativePath);
+        }
+        else
+            printf("<%s@%s:~%s> ", USERNAME, HOSTNAME, PATH);
+
+        printf("\033[0m");
 
         // Taking command as input
         scanf("%[^\n]s", INPUTSTRING);
