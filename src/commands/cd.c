@@ -1,5 +1,5 @@
-#include "header_files/commands.h"
-#include "header_files/util_variables.h"
+#include "../header_files/commands.h"
+#include "../header_files/util_variables.h"
 #include <stdio.h>
 #include <sys/stat.h>
 #include <string.h>
