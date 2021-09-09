@@ -69,7 +69,7 @@ int main(void)
         args[argc] = NULL;
 
         // Executing the command
-        execCommand(args, argc);
+        execCommand(args, argc, PATH, HOME);
     }
 
     return 0;
