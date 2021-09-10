@@ -51,10 +51,19 @@ void modifyPath(char *path, char *subpath, char *home)
 }
 
 // Implementation of cd
-void changeDirectory(char *path, char *subpath, char *home)
+void changeDirectory(char *path, char *subpath, char *home, char *prevPath)
 {
     char tempPath[MAX_PATH_LENGTH + 1];
     strcpy(tempPath, path);
+
+    // Accounting for cd - here to avoid stack allocation overhead
+    if (strcmp(subpath, "-") == 0)
+    {
+        strcpy(path, prevPath);
+        strcpy(prevPath, tempPath);
+
+        return;
+    }
 
     // Modifying the path
     modifyPath(path, subpath, home);
@@ -66,11 +75,16 @@ void changeDirectory(char *path, char *subpath, char *home)
     {
         printf("ERROR: Invalid path specified. Please try again.\n");
         strcpy(path, tempPath);
+        return;
     }
     // If path exists but not directory
     else if (!S_ISDIR(test.st_mode))
     {
         printf("ERROR: Not a directory. Please try again.\n");
         strcpy(path, tempPath);
+        return;
     }
+
+    // Copying the previous path to prevPath
+    strcpy(prevPath, tempPath);
 }

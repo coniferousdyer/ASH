@@ -10,6 +10,7 @@ char USERNAME[LOGIN_NAME_MAX + 1];
 char INPUTSTRING[MAX_COMMAND_LENGTH + 1];
 char COMMANDSTRING[MAX_COMMAND_LENGTH + 1];
 char PATH[MAX_PATH_LENGTH + 1];
+char PREVIOUSPATH[MAX_PATH_LENGTH + 1];
 char HOME[MAX_PATH_LENGTH + 1];
 
 int main(void)
@@ -24,6 +25,7 @@ int main(void)
     getlogin_r(USERNAME, LOGIN_NAME_MAX + 1);
     gethostname(HOSTNAME, HOST_NAME_MAX + 1);
     getcwd(PATH, MAX_PATH_LENGTH + 1);
+    getcwd(PREVIOUSPATH, MAX_PATH_LENGTH + 1);
     getcwd(HOME, MAX_PATH_LENGTH + 1);
 
     // Printing intro
@@ -93,7 +95,7 @@ int main(void)
         args[argc] = NULL;
 
         // Executing the command
-        execCommand(args, argc, PATH, HOME);
+        execCommand(args, argc, PATH, HOME, PREVIOUSPATH);
     }
 
     return 0;

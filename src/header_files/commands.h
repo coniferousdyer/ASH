@@ -5,7 +5,7 @@
 void modifyPath(char *path, char *subpath, char *home);
 
 // Implementation of cd
-void changeDirectory(char *path, char *subpath, char *home);
+void changeDirectory(char *path, char *subpath, char *home, char *prevPath);
 
 // Implementation of pwd
 void printWorkingDirectory(char *path, char *homePath);

@@ -9,9 +9,29 @@
 void parseInput(char *inputString, char *parsedString)
 {
     int len = 0;
+    _Bool doubleQuotes = 0;
 
     for (int i = 0; inputString[i] != '\0'; i++)
     {
+        // If the current character is a double quote
+        if (inputString[i] == '\"')
+        {
+            if (doubleQuotes)
+                doubleQuotes = 0;
+            else
+                doubleQuotes = 1;
+
+            continue;
+        }
+
+        // If enclosed within double quotes, insert a backslash to account for spaces - essentially converting the double quotes problem to a backslash problem
+        if (inputString[i] == ' ' && doubleQuotes)
+        {
+            parsedString[len] = '\\';
+            parsedString[len + 1] = ' ';
+            len += 2;
+        }
+
         // Checking if it's the first or the last character; if last character, there should not be a space before
         if (i == 0 || (i == strlen(inputString) - 1 && inputString[i - 1] != ' '))
         {
@@ -45,7 +65,7 @@ void parseInput(char *inputString, char *parsedString)
 }
 
 // Function to execute the corresponding command
-void execCommand(char *args[], int argc, char *path, char *home)
+void execCommand(char *args[], int argc, char *path, char *home, char *prevPath)
 {
     /*-----------BUILTIN COMMANDS-----------*/
 
@@ -69,7 +89,7 @@ void execCommand(char *args[], int argc, char *path, char *home)
             return;
         }
 
-        changeDirectory(path, args[1], home);
+        changeDirectory(path, args[1], home, prevPath);
         return;
     }
     // Checking if pwd was entered
@@ -93,7 +113,7 @@ void execCommand(char *args[], int argc, char *path, char *home)
             return;
     }
 
-    /*-----------OTHER COMMANDS-----------*/
+    /*-----------SYSTEM COMMANDS-----------*/
 
     // Create a new process
     pid_t pid = fork();
