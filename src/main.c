@@ -24,7 +24,7 @@ int main(void)
     getlogin_r(USERNAME, LOGIN_NAME_MAX + 1);
     gethostname(HOSTNAME, HOST_NAME_MAX + 1);
     getcwd(PATH, MAX_PATH_LENGTH + 1);
-    getcwd(HOME, MAX_PATH_LENGTH + 1);    
+    getcwd(HOME, MAX_PATH_LENGTH + 1);
 
     // Printing intro
     printf("\nWELCOME TO A-SHELL!\n\n");
@@ -55,14 +55,38 @@ int main(void)
 
         // The number of command-line arguments
         int argc = 0;
+        _Bool space = 0;
 
         // Tokenizing the string
         char *token = strtok(COMMANDSTRING, " ");
         while (token != NULL)
         {
-            args[argc] = token;
+            // If previous token ended in a backslash, concatenate current token with previous token
+            if (space == 1)
+            {
+                // Creating a temporary string to store the concatenataed data
+                char tempString[strlen(args[argc - 1]) + strlen(token) + 2];
+                strcpy(tempString, args[argc - 1]);
+                strcat(tempString, " ");
+                strcat(tempString, token);
+                strcpy(args[argc - 1], tempString);
+
+                space = 0;
+            }
+            else
+            {
+                args[argc] = token;
+                ++argc;
+            }
+
+            // Accounting for backslashes
+            if (args[argc - 1][strlen(args[argc - 1]) - 1] == '\\')
+            {
+                space = 1;
+                args[argc - 1][strlen(args[argc - 1]) - 1] = '\0';
+            }
+
             token = strtok(NULL, " ");
-            ++argc;
         }
 
         // Null-terminating the array

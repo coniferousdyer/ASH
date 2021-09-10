@@ -40,6 +40,7 @@ void modifyPath(char *path, char *subpath, char *home)
         }
         else
         {
+            // Checking if the last character is already a forward slash, i.e. the home directory
             if (path[strlen(path) - 1] != '/')
                 strcat(path, "/");
             strcat(path, directory);
@@ -48,7 +49,6 @@ void modifyPath(char *path, char *subpath, char *home)
         directory = strtok(NULL, "/");
     }
 }
-
 
 // Implementation of cd
 void changeDirectory(char *path, char *subpath, char *home)
