@@ -32,6 +32,7 @@ void changeDirectory(char *subpath, char *home, char *prevPath)
             // Validation of the preceding path
             char precedingPath[strlen(subpath) + 1];
             strncpy(precedingPath, subpath, i);
+            precedingPath[i] = '\0';
             if (strcmp(precedingPath, "") != 0)
                 if (chdir(precedingPath) != 0)
                 {
