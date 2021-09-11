@@ -183,7 +183,7 @@ void execCommand(char *args[], int argc, char *home, char *prevPath)
 
         // Wait for the child process to terminate if not a background process
         if (strcmp(args[argc - 1], "&") != 0)
-            wait(&STATUS);
+            waitpid(pid, &STATUS, 0);
         else
             printf("%d\n", pid);
     }
