@@ -28,7 +28,7 @@ int main(void)
     getcwd(HOME, MAX_PATH_LENGTH + 1);
 
     // Printing intro
-    printf("\nWELCOME TO A-SHELL!\n\n");
+    printf("\nWELCOME TO A-SHELL!\nYour home path is %s\n\n", HOME);
 
     // Core of the program - the infinite loop accepting commands as input
     while (1)
@@ -54,50 +54,71 @@ int main(void)
         scanf("%[^\n]s", INPUTSTRING);
         scanf("%c", &disposedCharacter);
 
-        // Parsing the string entered to get a proper string that can be tokenized
-        parseInput(INPUTSTRING, COMMANDSTRING);
+        // Splitting the command string into commands
+        char *command = INPUTSTRING;
+        // Marks the position of the next ; to replace it with null character
+        int semicolonPos = 0;
+        // Storing the length of the input string
+        int len = strlen(INPUTSTRING);
 
-        // The number of command-line arguments
-        int argc = 0;
-        _Bool space = 0;
-
-        // Tokenizing the string
-        char *token = strtok(COMMANDSTRING, " ");
-        while (token != NULL)
+        // The command loop
+        while (semicolonPos < len)
         {
-            // If previous token ended in a backslash, concatenate current token with previous token
-            if (space == 1)
-            {
-                // Creating a temporary string to store the concatenataed data
-                char tempString[strlen(args[argc - 1]) + strlen(token) + 2];
-                strcpy(tempString, args[argc - 1]);
-                strcat(tempString, " ");
-                strcat(tempString, token);
-                strcpy(args[argc - 1], tempString);
+            // Looping through command string until ; is found or end of string is reached
+            for (; semicolonPos != len && INPUTSTRING[semicolonPos] != ';'; semicolonPos++)
+                ;
 
-                space = 0;
-            }
-            else
+            INPUTSTRING[semicolonPos] = '\0';
+            ++semicolonPos;
+
+            // Parsing the string entered to get a proper string that can be tokenized
+            parseInput(command, COMMANDSTRING);
+
+            // The number of command-line arguments
+            int argc = 0;
+            _Bool space = 0;
+
+            // Tokenizing the command
+            char *token = strtok(COMMANDSTRING, " ");
+            while (token != NULL)
             {
-                args[argc] = token;
-                ++argc;
+                // If previous token ended in a backslash, concatenate current token with previous token
+                if (space == 1)
+                {
+                    // Creating a temporary string to store the concatenated data
+                    char tempString[strlen(args[argc - 1]) + strlen(token) + 2];
+                    strcpy(tempString, args[argc - 1]);
+                    strcat(tempString, " ");
+                    strcat(tempString, token);
+                    strcpy(args[argc - 1], tempString);
+
+                    space = 0;
+                }
+                else
+                {
+                    args[argc] = token;
+                    ++argc;
+                }
+
+                // Accounting for backslashes
+                if (args[argc - 1][strlen(args[argc - 1]) - 1] == '\\')
+                {
+                    space = 1;
+                    args[argc - 1][strlen(args[argc - 1]) - 1] = '\0';
+                }
+
+                token = strtok(NULL, " ");
             }
 
-            // Accounting for backslashes
-            if (args[argc - 1][strlen(args[argc - 1]) - 1] == '\\')
-            {
-                space = 1;
-                args[argc - 1][strlen(args[argc - 1]) - 1] = '\0';
-            }
+            // Null-terminating the array
+            args[argc] = NULL;
 
-            token = strtok(NULL, " ");
+            // Executing the command
+            execCommand(args, argc, HOME, PREVIOUSPATH);
+
+            // Moving command pointer to next command
+            command = INPUTSTRING + semicolonPos;
         }
-
-        // Null-terminating the array
-        args[argc] = NULL;
-
-        // Executing the command
-        execCommand(args, argc, HOME, PREVIOUSPATH);
     }
 
     return 0;
