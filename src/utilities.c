@@ -116,10 +116,6 @@ void execCommand(char *args[], int argc, char *home, char *prevPath)
     // Checking if echo was entered
     else if (strcmp(args[0], "echo") == 0)
     {
-        // If no argument except command was provided
-        if (argc == 1)
-            return;
-
         echo(args, argc);
         return;
     }
@@ -137,6 +133,13 @@ void execCommand(char *args[], int argc, char *home, char *prevPath)
 
     if (pid == 0)
     {
+        // Checking if the last argument was &
+        if (strcmp(args[argc - 1], "&") == 0)
+        {
+            args[argc - 1] = NULL;
+            argc--;
+        }
+
         // Executing the given command, replacing the address space of the child process
         if (execvp(args[0], args))
             printf("ERROR: The command does not exist. Please try again.\n");
@@ -145,7 +148,8 @@ void execCommand(char *args[], int argc, char *home, char *prevPath)
     {
         int STATUS;
 
-        // Wait for the child process to terminate
-        wait(&STATUS);
+        // Wait for the child process to terminate if not a background process
+        if (strcmp(args[argc - 1], "&") != 0)
+            wait(&STATUS);
     }
 }
