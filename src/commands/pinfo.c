@@ -20,9 +20,10 @@ void pinfo(pid_t pid, char *home)
 
     char execPath[MAX_PATH_LENGTH + 1], state;
     unsigned long int vSize;
+    pid_t pgpid, fgpid;
 
     // Getting state and virtual memory size
-    fscanf(fp, "%*d %*s %c %*d %*d %*d %*d %*d %*u %*u %*u %*u %*u %*u %*u %*u %*d %*d %*d %*d %*d %*d %*u %lu", &state, &vSize);
+    fscanf(fp, "%*d %*s %c %*d %d %*d %*d %d %*u %*u %*u %*u %*u %*u %*u %*u %*d %*d %*d %*d %*d %*d %*u %lu", &state, &pgpid, &fgpid, &vSize);
 
     // Reading the process' executable path
     sprintf(fileName, "/proc/%d/exe", pid);
@@ -32,7 +33,10 @@ void pinfo(pid_t pid, char *home)
     printf("PID -- %d\nProcess Status -- %c", pid, state);
 
     // Checking if process is a foreground or background process
-    
+    if (pgpid == fgpid)
+        printf("+\n");
+    else
+        printf("\n");
 
     printf("Memory -- %lu\nExecutable Path -- ", vSize);
 

@@ -81,8 +81,20 @@ void execCommand(char *args[], int argc, char *home, char *prevPath)
     if (argc == 0)
         return;
 
+    // Exiting the shell
+    if (strcmp(args[0], "exit") == 0)
+    {
+        if (argc != 1)
+        {
+            printf("ERROR: Too many arguments specified. Please try again.\n");
+            return;
+        }
+
+        printf("Exited with status 0.\n");
+        exit(0);
+    }
     // Checking if cd was entered
-    if (strcmp(args[0], "cd") == 0)
+    else if (strcmp(args[0], "cd") == 0)
     {
         // Checking for correct number of arguments
         if (argc > 2)
@@ -146,7 +158,7 @@ void execCommand(char *args[], int argc, char *home, char *prevPath)
 
     if (pid < 0)
     {
-        printf("ERROR: An error occurred while executing the command. Please try again.\n");
+        printf("ERROR: A new process could not be created.\n");
         return;
     }
 
@@ -155,6 +167,8 @@ void execCommand(char *args[], int argc, char *home, char *prevPath)
         // Checking if the last argument was &
         if (strcmp(args[argc - 1], "&") == 0)
         {
+            // Setting the child process group ID to 0 to identify it as a background process
+            setpgid(0, 0);
             args[argc - 1] = NULL;
             argc--;
         }
