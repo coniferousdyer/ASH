@@ -24,14 +24,6 @@ void parseInput(char *inputString, char *parsedString)
             continue;
         }
 
-        // If enclosed within double quotes, insert a backslash to account for spaces - essentially converting the double quotes problem to a backslash problem
-        if (inputString[i] == ' ' && doubleQuotes)
-        {
-            parsedString[len] = '\\';
-            parsedString[len + 1] = ' ';
-            len += 2;
-        }
-
         // Checking if it's the first or the last character; if last character, there should not be a space before
         if (i == 0 || (i == strlen(inputString) - 1 && inputString[i - 1] != ' '))
         {
@@ -55,6 +47,21 @@ void parseInput(char *inputString, char *parsedString)
                 continue;
             else
             {
+                // If enclosed within double quotes, insert a backslash to account for spaces - essentially converting the double quotes problem to a backslash problem
+                if (inputString[i] == ' ' && doubleQuotes)
+                {
+                    // If preceding character was a double quote
+                    if (inputString[i - 1] == '\"')
+                        continue;
+
+                    if (i != strlen(inputString) - 1 && inputString[i + 1] == '\"')
+                        continue;
+
+                    parsedString[len] = '\\';
+                    parsedString[len + 1] = ' ';
+                    len += 2;
+                }
+
                 parsedString[len] = inputString[i];
                 ++len;
             }
@@ -112,6 +119,9 @@ void execCommand(char *args[], int argc, char *home, char *prevPath)
         // If no argument except command was provided
         if (argc == 1)
             return;
+
+        echo(args, argc);
+        return;
     }
 
     /*-----------SYSTEM COMMANDS-----------*/
