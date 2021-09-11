@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include <sys/wait.h>
 
 // Function to obtain input from user and format it to give us the command
@@ -119,6 +120,24 @@ void execCommand(char *args[], int argc, char *home, char *prevPath)
         echo(args, argc);
         return;
     }
+    // Checking if pinfo was entered
+    else if (strcmp(args[0], "pinfo") == 0)
+    {
+        if (argc == 1)
+        {
+            pid_t pid = getpid();
+            pinfo(pid, home);
+        }
+        else if (argc == 2)
+        {
+            pid_t pid = atoi(args[1]);
+            pinfo(pid, home);
+        }
+        else
+            printf("ERROR: Too many arguments specified. Please try again.\n");
+
+        return;
+    }
 
     /*-----------SYSTEM COMMANDS-----------*/
 
@@ -151,5 +170,7 @@ void execCommand(char *args[], int argc, char *home, char *prevPath)
         // Wait for the child process to terminate if not a background process
         if (strcmp(args[argc - 1], "&") != 0)
             wait(&STATUS);
+        else
+            printf("%d\n", pid);
     }
 }
