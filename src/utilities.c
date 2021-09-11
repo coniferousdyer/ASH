@@ -65,7 +65,7 @@ void parseInput(char *inputString, char *parsedString)
 }
 
 // Function to execute the corresponding command
-void execCommand(char *args[], int argc, char *path, char *home, char *prevPath)
+void execCommand(char *args[], int argc, char *home, char *prevPath)
 {
     /*-----------BUILTIN COMMANDS-----------*/
 
@@ -83,13 +83,14 @@ void execCommand(char *args[], int argc, char *path, char *home, char *prevPath)
             return;
         }
 
+        // Accounting for cd only
         if (argc == 1)
         {
-            strcpy(path, home);
+            chdir(home);
             return;
         }
 
-        changeDirectory(path, args[1], home, prevPath);
+        changeDirectory(args[1], home, prevPath);
         return;
     }
     // Checking if pwd was entered
@@ -102,7 +103,7 @@ void execCommand(char *args[], int argc, char *path, char *home, char *prevPath)
             return;
         }
 
-        printWorkingDirectory(path, home);
+        printWorkingDirectory();
         return;
     }
     // Checking if echo was entered

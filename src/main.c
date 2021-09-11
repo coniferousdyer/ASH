@@ -24,7 +24,6 @@ int main(void)
     // Obtaning username, hostname and path of current working directory (the home directory for this shell)
     getlogin_r(USERNAME, LOGIN_NAME_MAX + 1);
     gethostname(HOSTNAME, HOST_NAME_MAX + 1);
-    getcwd(PATH, MAX_PATH_LENGTH + 1);
     getcwd(PREVIOUSPATH, MAX_PATH_LENGTH + 1);
     getcwd(HOME, MAX_PATH_LENGTH + 1);
 
@@ -34,6 +33,9 @@ int main(void)
     // Core of the program - the infinite loop accepting commands as input
     while (1)
     {
+        // Obtaining current path
+        getcwd(PATH, MAX_PATH_LENGTH + 1);
+
         // Printing username, hostname and path in color red
         printf("\033[1;31m");
 
@@ -95,7 +97,7 @@ int main(void)
         args[argc] = NULL;
 
         // Executing the command
-        execCommand(args, argc, PATH, HOME, PREVIOUSPATH);
+        execCommand(args, argc, HOME, PREVIOUSPATH);
     }
 
     return 0;

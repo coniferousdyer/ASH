@@ -5,6 +5,6 @@
 void parseInput(char *inputString, char *parsedString);
 
 // Function to execute the corresponding command
-void execCommand(char *args[], int argc, char *path, char *home, char *prevPath);
+void execCommand(char *args[], int argc, char *home, char *prevPath);
 
 #endif
