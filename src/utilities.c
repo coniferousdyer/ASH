@@ -21,8 +21,6 @@ void parseInput(char *inputString, char *parsedString)
                 doubleQuotes = 0;
             else
                 doubleQuotes = 1;
-
-            continue;
         }
 
         // Checking if it's the first or the last character; if last character, there should not be a space before
@@ -147,6 +145,29 @@ void execCommand(char *args[], int argc, char *home, char *prevPath)
         }
         else
             printf("ERROR: Too many arguments specified. Please try again.\n");
+
+        return;
+    }
+    // Checking if repeat was entered
+    else if (strcmp(args[0], "repeat") == 0)
+    {
+        if (argc <= 2)
+        {
+            printf("ERROR: Too few arguments specified. Please try again.\n");
+            return;
+        }
+
+        // Storinging the number of times the command must be repeated
+        int times = atoi(args[1]);
+
+        // Shifting the args array back by 2 to replace "repeat n"
+        for (int i = 2; i <= argc; i++)
+            args[i - 2] = args[i];
+        argc -= 2;
+
+        // Calling execCommand to execute the command the required number of times
+        for (int i = 0; i < times; i++)
+            execCommand(args, argc, home, prevPath);
 
         return;
     }

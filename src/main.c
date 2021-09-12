@@ -64,9 +64,19 @@ int main(void)
         // The command loop
         while (semicolonPos < len)
         {
-            // Looping through command string until ; is found or end of string is reached
-            for (; semicolonPos != len && INPUTSTRING[semicolonPos] != ';'; semicolonPos++)
-                ;
+            _Bool doubleQuotes = 0;
+
+            // Looping through command string until ; which is not within double quotes is found or end of string is reached
+            for (; semicolonPos != len; semicolonPos++)
+            {
+                if (INPUTSTRING[semicolonPos] == '\"' && !doubleQuotes)
+                    doubleQuotes = 1;
+                else if (INPUTSTRING[semicolonPos] == '\"' && doubleQuotes)
+                    doubleQuotes = 0;
+
+                if (INPUTSTRING[semicolonPos] == ';' && !doubleQuotes)
+                    break;
+            }
 
             INPUTSTRING[semicolonPos] = '\0';
             ++semicolonPos;
