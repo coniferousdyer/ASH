@@ -46,7 +46,7 @@ void parseInput(char *inputString, char *parsedString)
                 continue;
             else
             {
-                // If enclosed within double quotes, insert a backslash to account for spaces - essentially converting the double quotes problem to a backslash problem
+                // Account for spaces before and after double quotes
                 if (inputString[i] == ' ' && doubleQuotes)
                 {
                     // If preceding character was a double quote
@@ -55,10 +55,6 @@ void parseInput(char *inputString, char *parsedString)
 
                     if (i != strlen(inputString) - 1 && inputString[i + 1] == '\"')
                         continue;
-
-                    parsedString[len] = '\\';
-                    parsedString[len + 1] = ' ';
-                    len += 2;
                 }
 
                 parsedString[len] = inputString[i];

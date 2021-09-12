@@ -86,14 +86,18 @@ int main(void)
 
             // The number of command-line arguments
             int argc = 0;
-            _Bool space = 0;
+            _Bool space = 0, Echo = 0;
+
+            // Checking if the command entered was "echo"
+            if (strncmp(COMMANDSTRING, "echo", 4) == 0)
+                Echo = 1;
 
             // Tokenizing the command
             char *token = strtok(COMMANDSTRING, " ");
             while (token != NULL)
             {
-                // If previous token ended in a backslash, concatenate current token with previous token
-                if (space == 1)
+                // If previous token ended in a backslash and command is not echo, concatenate current token with previous token
+                if (!Echo && space == 1)
                 {
                     // Creating a temporary string to store the concatenated data
                     char tempString[strlen(args[argc - 1]) + strlen(token) + 2];
@@ -111,7 +115,7 @@ int main(void)
                 }
 
                 // Accounting for backslashes
-                if (args[argc - 1][strlen(args[argc - 1]) - 1] == '\\')
+                if (!Echo && args[argc - 1][strlen(args[argc - 1]) - 1] == '\\')
                 {
                     space = 1;
                     args[argc - 1][strlen(args[argc - 1]) - 1] = '\0';
