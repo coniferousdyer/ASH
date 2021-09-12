@@ -19,4 +19,7 @@ void ls(int numFlag, char *path);
 // Function to list the contents of a directory with permissions and other information
 void lsl(int numFlag, char *path);
 
+// The control function for ls
+void lsHandler(char *args[], int argc);
+
 #endif
