@@ -81,9 +81,21 @@ void lsHandler(char *args[], int argc)
     int extraArgs = argc - optind;
     int extraArgsRemaining = extraArgs;
 
+    // If no paths were provided
+    if (extraArgs == 0)
+    {
+        if (combination <= 1)
+            ls(combination, ".");
+        else
+            lsl(combination, ".");
+    }
+
     // Checking for extra arguments, i.e. the paths, supplied
     for (; optind < argc; optind++)
     {
+        if (strcmp(args[optind], "~") == 0)
+            args[optind] = HOME;
+
         // Checking the appropriate function to call, with correct arguments
         if (combination <= 1)
         {
