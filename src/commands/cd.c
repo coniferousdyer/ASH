@@ -6,7 +6,7 @@
 #include <unistd.h>
 
 // Implementation of cd
-void changeDirectory(char *subpath, char *home, char *prevPath)
+void changeDirectory(char *subpath)
 {
     char tempPath[MAX_PATH_LENGTH + 1];
     getcwd(tempPath, MAX_PATH_LENGTH + 1);
@@ -14,14 +14,14 @@ void changeDirectory(char *subpath, char *home, char *prevPath)
     // Accounting for cd -
     if (strcmp(subpath, "-") == 0)
     {
-        chdir(prevPath);
-        strcpy(prevPath, tempPath);
+        chdir(PREVIOUSPATH);
+        strcpy(PREVIOUSPATH, tempPath);
         return;
     }
     // Accounting for cd ~
     else if (strcmp(subpath, "~") == 0)
     {
-        chdir(home);
+        chdir(HOME);
         return;
     }
 
@@ -41,7 +41,7 @@ void changeDirectory(char *subpath, char *home, char *prevPath)
                 }
 
             // After validation, concatenating home path and the part of provided path after ~
-            chdir(home);
+            chdir(HOME);
             if (i == strlen(subpath) - 1 || (i == strlen(subpath) - 2 && subpath[i + 1] == '/'))
                 return;
             strcpy(subpath, &subpath[i + 2]);
@@ -56,5 +56,5 @@ void changeDirectory(char *subpath, char *home, char *prevPath)
     }
 
     // Copying the previous path to prevPath
-    strcpy(prevPath, tempPath);
+    strcpy(PREVIOUSPATH, tempPath);
 }

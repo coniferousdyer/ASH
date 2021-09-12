@@ -4,7 +4,7 @@
 #include <string.h>
 #include <stdio.h>
 
-void pinfo(pid_t pid, char *home)
+void pinfo(pid_t pid)
 {
     char fileName[25];
     sprintf(fileName, "/proc/%d/stat", pid);
@@ -41,9 +41,9 @@ void pinfo(pid_t pid, char *home)
     printf("Memory -- %lu\nExecutable Path -- ", vSize);
 
     // Deciding whether relative or absolute path is to be used by comparing the first strlen(HOME) characters
-    if (strncmp(execPath, home, strlen(home)) == 0)
+    if (strncmp(execPath, HOME, strlen(HOME)) == 0)
     {
-        char *relativePath = &execPath[strlen(home)];
+        char *relativePath = &execPath[strlen(HOME)];
         printf("~%s\n", relativePath);
     }
     else
