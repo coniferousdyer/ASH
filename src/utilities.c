@@ -7,6 +7,68 @@
 #include <stdlib.h>
 #include <sys/wait.h>
 
+/*-----------------------------------------------------*
+ * Function to insert a process into the process array *
+ *-----------------------------------------------------*/
+void InsertProcess(int pid, char *pName)
+{
+    // Copying the pid and name to the array
+    PROCESSLIST[CHILDNO].pid = pid;
+    PROCESSLIST[CHILDNO].pName = (char *)malloc(strlen(pName) + 1);
+    strcpy(PROCESSLIST[CHILDNO].pName, pName);
+    ++CHILDNO;
+}
+
+/*------------------------------------------------------*
+ * Function to delete a process with given pid from the *
+ * process array and returns the process name           *
+ *------------------------------------------------------*/
+void DeleteProcess(int pid, char nameString[])
+{
+    for (int i = 0; i < CHILDNO; i++)
+        if (PROCESSLIST[i].pid == pid)
+        {
+            // Copying the name to nameString
+            strcpy(nameString, PROCESSLIST[i].pName);
+            free(PROCESSLIST[i].pName);
+
+            // Shifting the array to delete the process from the array
+            for (int j = i; j < CHILDNO - 1; j++)
+                PROCESSLIST[j] = PROCESSLIST[j + 1];
+
+            --CHILDNO;
+            break;
+        }
+}
+
+/*-----------------------------------------------------*
+ * The signal handler which reaps background processes *
+ *-----------------------------------------------------*/
+void signalHandler(int signal)
+{
+    int STATUS, pid;
+
+    // Waiting for background processes to terminate
+    while ((pid = waitpid(-1, &STATUS, WNOHANG)) > 0)
+    {
+        if (pid > 0)
+        {
+            // Deleting the process from the process list and obtaining its name
+            char name[MAX_FILE_LENGTH + 1];
+            DeleteProcess(pid, name);
+
+            if (WIFEXITED(STATUS))
+                printf("\n%s with pid %d exited normally.\n", name, pid);
+            else if (WIFSIGNALED(STATUS))
+                printf("\n%s with pid %d exited abnormally.\n", name, pid);
+
+            // Displaying the prompt
+            displayPrompt();
+            fflush(stdout);
+        }
+    }
+}
+
 /*-------------------------------------------------------------------------*
  * Function to obtain input from user and format it to give us the command *
  *-------------------------------------------------------------------------*/
@@ -216,7 +278,26 @@ void execCommand(char *args[], int argc)
         if (strcmp(args[argc - 1], "&") != 0)
             waitpid(pid, &STATUS, 0);
         else
+        {
+            if (CHILDNO == MAX_CHILD_NO)
+            {
+                printf("ERROR: The maximum number of background processes has been reached. The process is being executed as a foreground process.\n");
+                waitpid(pid, &STATUS, 0);
+                return;
+            }
+
             printf("%d\n", pid);
+
+            char path[MAX_FILE_LENGTH + 12];
+
+            // Formatting the process name
+            int i;
+            for (i = 0; args[0][i] == '.' || args[0][i] == '/'; i++)
+                ;
+
+            // Inserting the process into the process list
+            InsertProcess(pid, args[0] + i);
+        }
     }
 }
 

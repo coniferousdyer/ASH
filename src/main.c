@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <signal.h>
 
 // Important global strings
 char HOSTNAME[HOST_NAME_MAX + 1];
@@ -12,9 +13,14 @@ char COMMANDSTRING[MAX_COMMAND_LENGTH + 1];
 char PATH[MAX_PATH_LENGTH + 1];
 char PREVIOUSPATH[MAX_PATH_LENGTH + 1];
 char HOME[MAX_PATH_LENGTH + 1];
+Process PROCESSLIST[MAX_CHILD_NO];
+int CHILDNO = 0;
 
 int main(void)
 {
+    // Registering the signal handler for background processes
+    signal(SIGCHLD, signalHandler);
+
     // The array containing the command-line arguments entered
     char *args[MAX_ARG_NO + 1];
 

@@ -48,7 +48,7 @@ int totalSize(char *path, int numFlag, int colLengths[])
             stat(fullPath, &s);
 
             // Core of the function
-            size += (s.st_blocks * 512 + 1023) / 1024;
+            size += (s.st_blocks / 2);
             colLengths[0] = (colLengths[0] >= countDigits(s.st_nlink)) ? colLengths[0] : countDigits(s.st_nlink);
             colLengths[1] = (colLengths[1] >= strlen(getpwuid(s.st_uid)->pw_name)) ? colLengths[1] : strlen(getpwuid(s.st_uid)->pw_name);
             colLengths[2] = (colLengths[2] >= strlen(getgrgid(s.st_gid)->gr_name)) ? colLengths[2] : strlen(getgrgid(s.st_gid)->gr_name);
@@ -171,7 +171,7 @@ void lsHandler(char *args[], int argc)
      * combination = 3 -> both -l and -a */
     int opt, combination = 0;
 
-    // Resetting optind to 0 for getopts to work
+    // Resetting optind to 0 for getopt to work
     optind = 0;
 
     while ((opt = getopt(argc, args, "al")) != -1)
