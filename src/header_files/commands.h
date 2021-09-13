@@ -13,6 +13,12 @@ void echo(char *args[], int argc);
 // Implementation of pinfo
 void pinfo(int pid);
 
+// Function to count the digits of a number
+int countDigits(long int n);
+
+// Function to compute size and column lengths
+void totalSize(char *path, int numFlag, int colLengths[]);
+
 // Function to list the contents of a directory
 void ls(int numFlag, char *path);
 

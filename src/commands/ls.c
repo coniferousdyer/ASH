@@ -8,6 +8,60 @@
 #include <pwd.h>
 #include <grp.h>
 
+// Function to count the digits of a number
+int countDigits(long int n)
+{
+    int count = 0;
+    while (n != 0)
+    {
+        n = n / 10;
+        ++count;
+    }
+
+    return count;
+}
+
+// Function to compute size and column lengths
+int totalSize(char *path, int numFlag, int colLengths[])
+{
+    int size = 0;
+    DIR *directory;
+    struct dirent *entry;
+
+    directory = opendir(path);
+
+    if (directory)
+    {
+        // Looping through the contents of the directory
+        while ((entry = readdir(directory)) != NULL)
+        {
+            // If it is a hidden file/directory, i.e. when no -a was provided
+            if (numFlag == 0 && entry->d_name[0] == '.')
+                continue;
+
+            struct stat s;
+            char fullPath[MAX_PATH_LENGTH + 1];
+
+            // Obtaining the path of the file/directory
+            sprintf(fullPath, "%s/%s", path, entry->d_name);
+
+            stat(fullPath, &s);
+
+            // Core of the function
+            size += (s.st_blocks * 512 + 1023) / 1024;
+            colLengths[0] = (colLengths[0] >= countDigits(s.st_nlink)) ? colLengths[0] : countDigits(s.st_nlink);
+            colLengths[1] = (colLengths[1] >= strlen(getpwuid(s.st_uid)->pw_name)) ? colLengths[1] : strlen(getpwuid(s.st_uid)->pw_name);
+            colLengths[2] = (colLengths[2] >= strlen(getgrgid(s.st_gid)->gr_name)) ? colLengths[2] : strlen(getgrgid(s.st_gid)->gr_name);
+            colLengths[3] = (colLengths[3] >= countDigits(s.st_size)) ? colLengths[3] : countDigits(s.st_size);
+        }
+
+        closedir(directory);
+        return size;
+    }
+    else
+        return -1;
+}
+
 // Function to list the contents of a directory
 void ls(int numFlag, char *path)
 {
@@ -44,6 +98,16 @@ void lsl(int numFlag, char *path)
 
     if (total >= 0)
     {
+        // Computing the total size and column lengths
+        int colLengths[4] = {};
+        int tSize = totalSize(path, numFlag, colLengths);
+        if (tSize == -1)
+        {
+            printf("ERROR: Invalid path specified. Please try again.\n");
+            return;
+        }
+        printf("total %d\n", tSize);
+
         // Looping through the contents of the directory
         for (int i = 0; i < total; i++)
         {
@@ -55,9 +119,7 @@ void lsl(int numFlag, char *path)
             char fullPath[MAX_PATH_LENGTH + 1];
 
             // Obtaining the path of the file/directory
-            strcpy(fullPath, path);
-            strcat(fullPath, "/");
-            strcat(fullPath, entry[i]->d_name);
+            sprintf(fullPath, "%s/%s", path, entry[i]->d_name);
 
             stat(fullPath, &s);
 
@@ -83,7 +145,7 @@ void lsl(int numFlag, char *path)
             strcat(permissionString, (s.st_mode & S_IWOTH) ? "w" : "-");
             strcat(permissionString, (s.st_mode & S_IXOTH) ? "x" : "-");
 
-            printf("%s %ld %s %s %ld %s %s\n", permissionString, s.st_nlink, getpwuid(s.st_uid)->pw_name, getgrgid(s.st_gid)->gr_name, s.st_size, timeString, entry[i]->d_name);
+            printf("%s %*ld %*s %*s %*ld %s %s\n", permissionString, colLengths[0], s.st_nlink, colLengths[1], getpwuid(s.st_uid)->pw_name, colLengths[2], getgrgid(s.st_gid)->gr_name, colLengths[3], s.st_size, timeString, entry[i]->d_name);
         }
     }
     else

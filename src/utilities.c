@@ -161,14 +161,17 @@ void execCommand(char *args[], int argc)
         // Storinging the number of times the command must be repeated
         int times = atoi(args[1]);
 
+        // Creating a copy of args
+        char *argsCopy[argc + 1];
+
         // Shifting the args array back by 2 to replace "repeat n"
         for (int i = 2; i <= argc; i++)
-            args[i - 2] = args[i];
+            argsCopy[i - 2] = args[i];
         argc -= 2;
 
         // Calling execCommand to execute the command the required number of times
         for (int i = 0; i < times; i++)
-            execCommand(args, argc);
+            execCommand(argsCopy, argc);
 
         return;
     }
