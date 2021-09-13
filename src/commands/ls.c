@@ -3,28 +3,30 @@
 #include <string.h>
 #include <dirent.h>
 #include <unistd.h>
+#include <time.h>
+#include <sys/stat.h>
+#include <pwd.h>
+#include <grp.h>
 
 // Function to list the contents of a directory
 void ls(int numFlag, char *path)
 {
     DIR *directory;
-    struct dirent *entry;
-    directory = opendir(path);
+    struct dirent **entry;
+    int total = scandir(path, &entry, NULL, alphasort);
 
-    if (directory)
+    if (total >= 0)
     {
         // If -a was provided
         if (numFlag == 1)
-            while ((entry = readdir(directory)) != NULL)
-                printf("%s\n", entry->d_name);
+            for (int i = 0; i < total; i++)
+                printf("%s\n", entry[i]->d_name);
 
         // If no -a was provided
         else if (numFlag == 0)
-            while ((entry = readdir(directory)) != NULL)
-                if (entry->d_name[0] != '.')
-                    printf("%s\n", entry->d_name);
-
-        closedir(directory);
+            for (int i = 0; i < total; i++)
+                if (entry[i]->d_name[0] != '.')
+                    printf("%s\n", entry[i]->d_name);
     }
     else
     {
@@ -36,7 +38,59 @@ void ls(int numFlag, char *path)
 // Function to list the contents of a directory with permissions and other information
 void lsl(int numFlag, char *path)
 {
-    printf("CALLED lsl\n");
+    DIR *directory;
+    struct dirent **entry;
+    int total = scandir(path, &entry, NULL, alphasort);
+
+    if (total >= 0)
+    {
+        // Looping through the contents of the directory
+        for (int i = 0; i < total; i++)
+        {
+            // If it is a hidden file/directory, i.e. when no -a was provided
+            if (numFlag == 0 && entry[i]->d_name[0] == '.')
+                continue;
+
+            struct stat s;
+            char fullPath[MAX_PATH_LENGTH + 1];
+
+            // Obtaining the path of the file/directory
+            strcpy(fullPath, path);
+            strcat(fullPath, "/");
+            strcat(fullPath, entry[i]->d_name);
+
+            stat(fullPath, &s);
+
+            // Obtaining creation time of file/directory
+            struct tm *creationTime = localtime(&(s.st_ctime));
+            char timeString[30];
+
+            strftime(timeString, 24, "%b %d %H:%M", creationTime);
+
+            // String to store the permissions
+            char permissionString[11];
+            strcpy(permissionString, "");
+
+            // Storing file permissions in the permissions string
+            strcat(permissionString, (S_ISDIR(s.st_mode)) ? "d" : "-");
+            strcat(permissionString, (s.st_mode & S_IRUSR) ? "r" : "-");
+            strcat(permissionString, (s.st_mode & S_IWUSR) ? "w" : "-");
+            strcat(permissionString, (s.st_mode & S_IXUSR) ? "x" : "-");
+            strcat(permissionString, (s.st_mode & S_IRGRP) ? "r" : "-");
+            strcat(permissionString, (s.st_mode & S_IWGRP) ? "w" : "-");
+            strcat(permissionString, (s.st_mode & S_IXGRP) ? "x" : "-");
+            strcat(permissionString, (s.st_mode & S_IROTH) ? "r" : "-");
+            strcat(permissionString, (s.st_mode & S_IWOTH) ? "w" : "-");
+            strcat(permissionString, (s.st_mode & S_IXOTH) ? "x" : "-");
+
+            printf("%s %ld %s %s %ld %s %s\n", permissionString, s.st_nlink, getpwuid(s.st_uid)->pw_name, getgrgid(s.st_gid)->gr_name, s.st_size, timeString, entry[i]->d_name);
+        }
+    }
+    else
+    {
+        printf("ERROR: Invalid path specified. Please try again.\n");
+        return;
+    }
 }
 
 // The control function for ls
@@ -50,11 +104,10 @@ void lsHandler(char *args[], int argc)
     }
 
     /* combination = 0 -> no flags
-         * combination = 1 -> only -a
-         * combination = 2 -> only -l
-         * combination = 3 -> both -l and -a */
+     * combination = 1 -> only -a
+     * combination = 2 -> only -l
+     * combination = 3 -> both -l and -a */
     int opt, combination = 0;
-    char path[MAX_PATH_LENGTH + 1];
 
     // Resetting optind to 0 for getopts to work
     optind = 0;
@@ -87,7 +140,7 @@ void lsHandler(char *args[], int argc)
         if (combination <= 1)
             ls(combination, ".");
         else
-            lsl(combination, ".");
+            lsl(combination - 2, ".");
     }
 
     // Checking for extra arguments, i.e. the paths, supplied
