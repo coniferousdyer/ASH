@@ -15,6 +15,9 @@ char PREVIOUSPATH[MAX_PATH_LENGTH + 1];
 char HOME[MAX_PATH_LENGTH + 1];
 Process PROCESSLIST[MAX_CHILD_NO];
 int CHILDNO = 0;
+char HISTORY[20][MAX_COMMAND_LENGTH + 1];
+int HISTORYNO = 0;
+int REAR = -1, FRONT = -1;
 
 int main(void)
 {
@@ -29,6 +32,9 @@ int main(void)
     gethostname(HOSTNAME, HOST_NAME_MAX + 1);
     getcwd(PREVIOUSPATH, MAX_PATH_LENGTH + 1);
     getcwd(HOME, MAX_PATH_LENGTH + 1);
+
+    // Initializing the history
+    initHistory();
 
     // Printing intro
     printf("\033[0;34m\nWELCOME TO A-SHELL!\nYour home path is %s\n\n\033[0m", HOME);

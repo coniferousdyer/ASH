@@ -7,6 +7,12 @@ void InsertProcess(int pid, char *name);
 // Function to delete a process with given pid from the process array and returns the process name
 void DeleteProcess(int pid, char nameString[]);
 
+// Function to read previous session commands from external file
+void initHistory();
+
+// Function to save current session's history to external file
+void saveHistory();
+
 // The signal handler which reaps background processes
 void signalHandler(int signal);
 
@@ -14,7 +20,7 @@ void signalHandler(int signal);
 void parseInput(char *inputString, char *parsedString);
 
 // Function to execute the corresponding command
-void execCommand(char *args[], int argc);
+void execCommand(char *args[], int argc, _Bool flag);
 
 // Function to display a prompt to the user
 void displayPrompt();

@@ -28,4 +28,13 @@ void lsl(int numFlag, char *path);
 // The control function for ls
 void lsHandler(char *args[], int argc);
 
+// Function to add command to history
+void addToHistory(char *args[], int argc);
+
+// Function to delete earliest command from history
+void deleteFromHistory();
+
+// Function to print the history of commands
+void history(int n);
+
 #endif

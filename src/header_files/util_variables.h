@@ -27,5 +27,8 @@ extern char PREVIOUSPATH[MAX_PATH_LENGTH + 1];
 extern char HOME[MAX_PATH_LENGTH + 1];
 extern Process PROCESSLIST[MAX_CHILD_NO];
 extern int CHILDNO;
+extern char HISTORY[20][MAX_COMMAND_LENGTH + 1];
+extern int HISTORYNO;
+extern int REAR, FRONT;
 
 #endif

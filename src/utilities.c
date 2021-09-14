@@ -41,6 +41,61 @@ void DeleteProcess(int pid, char nameString[])
         }
 }
 
+/*---------------------------------------------------------------*
+ * Function to read previous session commands from external file *
+ *---------------------------------------------------------------*/
+void initHistory()
+{
+    // Opening file if it exists, else creating it
+    char path[MAX_PATH_LENGTH + 101];
+    sprintf(path, "%s/%s", HOME, "history.txt");
+
+    FILE *fp = fopen(path, "r");
+
+    if (fp == NULL)
+        return;
+
+    // Reading each line (command) from the line and storing it in a circular queue
+    while (fgets(HISTORY[HISTORYNO], sizeof(HISTORY[HISTORYNO]), fp) != NULL)
+    {
+        HISTORY[HISTORYNO][strlen(HISTORY[HISTORYNO]) - 1] = '\0';
+        ++HISTORYNO;
+
+        if (FRONT == -1)
+            FRONT = REAR = 0;
+        else
+            ++REAR;
+    }
+
+    fclose(fp);
+}
+
+/*-------------------------------------------------------------*
+ * Function to save current session's history to external file *
+ *-------------------------------------------------------------*/
+void saveHistory()
+{
+    // Opening file if it exists, else creating it
+    char path[MAX_PATH_LENGTH + 101];
+    sprintf(path, "%s/%s", HOME, "history.txt");
+
+    FILE *fp = fopen(path, "w+");
+
+    // Writing each command to the file
+    if (REAR >= FRONT)
+        for (int i = FRONT; i <= REAR; i++)
+            fprintf(fp, "%s\n", HISTORY[i]);
+    else
+    {
+        for (int i = FRONT; i < 20; i++)
+            fprintf(fp, "%s\n", HISTORY[i]);
+        for (int i = 0; i <= REAR; i++)
+            fprintf(fp, "%s\n", HISTORY[i]);
+    }
+
+    fclose(fp);
+}
+
 /*-----------------------------------------------------*
  * The signal handler which reaps background processes *
  *-----------------------------------------------------*/
@@ -117,9 +172,19 @@ void parseInput(char *inputString, char *parsedString)
                     // If preceding character was a double quote
                     if (inputString[i - 1] == '\"')
                         continue;
+                    else
+                    {
+                        // Finding the index where " occurs
+                        int j;
+                        for (j = i + 1; inputString[j] == ' '; j++)
+                            ;
 
-                    if (i != strlen(inputString) - 1 && inputString[i + 1] == '\"')
-                        continue;
+                        if (inputString[j] == '\"' || inputString[j] == '\0')
+                        {
+                            doubleQuotes = 0;
+                            i = j;
+                        }
+                    }
                 }
 
                 parsedString[len] = inputString[i];
@@ -134,13 +199,21 @@ void parseInput(char *inputString, char *parsedString)
 /*-----------------------------------------------*
  * Function to execute the corresponding command *
  *-----------------------------------------------*/
-void execCommand(char *args[], int argc)
+void execCommand(char *args[], int argc, _Bool flag)
 {
     /*-----------BUILTIN COMMANDS-----------*/
 
     // If nothing was entered
     if (argc == 0)
         return;
+
+    // Adding the command to history. If flag = 1, add to history
+    if (strcmp(args[0], "history") != 0 && flag)
+    {
+        if (HISTORYNO == 20)
+            deleteFromHistory();
+        addToHistory(args, argc);
+    }
 
     // Exiting the shell
     if (strcmp(args[0], "exit") == 0)
@@ -152,6 +225,7 @@ void execCommand(char *args[], int argc)
         }
 
         printf("Exited with status 0.\n");
+        saveHistory();
         exit(0);
     }
     // Checking if cd was entered
@@ -233,7 +307,7 @@ void execCommand(char *args[], int argc)
 
         // Calling execCommand to execute the command the required number of times
         for (int i = 0; i < times; i++)
-            execCommand(argsCopy, argc);
+            execCommand(argsCopy, argc, 0);
 
         return;
     }
@@ -241,6 +315,12 @@ void execCommand(char *args[], int argc)
     else if (strcmp(args[0], "ls") == 0)
     {
         lsHandler(args, argc);
+        return;
+    }
+    // Checking if history was entered
+    else if (strcmp(args[0], "history") == 0)
+    {
+        history(20);
         return;
     }
 
@@ -413,7 +493,7 @@ void tokenizeAndExec(char *args[])
         args[argc] = NULL;
 
         // Executing the command
-        execCommand(args, argc);
+        execCommand(args, argc, 1);
 
         // Moving command pointer to next command
         command = INPUTSTRING + semicolonPos;
