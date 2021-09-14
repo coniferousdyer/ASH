@@ -1,6 +1,9 @@
 #ifndef INPUT_H
 #define INPUT_H
 
+// Function to check if a string can be converted to a number (before using atoi)
+_Bool isInteger(char *str);
+
 // Function to insert a process into the process array
 void InsertProcess(int pid, char *name);
 

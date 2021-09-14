@@ -16,13 +16,21 @@ void addToHistory(char *args[], int argc)
     // If less than 20 commands present
     if (HISTORYNO < 20)
     {
+        if (FRONT == -1)
+            FRONT = 0;
+
         ++REAR;
         strcpy(HISTORY[REAR], command);
         ++HISTORYNO;
     }
     else
     {
-        if (REAR == 19 && FRONT != 0)
+        if (FRONT == -1)
+        {
+            FRONT = REAR = 0;
+            strcpy(HISTORY[REAR], command);
+        }
+        else if (REAR == 19 && FRONT != 0)
         {
             REAR = 0;
             strcpy(HISTORY[REAR], command);
@@ -53,14 +61,21 @@ void history(int n)
         return;
     }
 
+    int count = 0;
+    char *tempArray[20];
+
+    // Storing in a temporary array for printing convenience
     if (REAR >= FRONT)
-        for (int i = FRONT; i <= REAR; i++)
-            printf("%s\n", HISTORY[i]);
+        for (int i = FRONT; i <= REAR; i++, count++)
+            tempArray[count] = HISTORY[i];
     else
     {
-        for (int i = FRONT; i < 20; i++)
-            printf("%s\n", HISTORY[i]);
-        for (int i = 0; i <= REAR; i++)
-            printf("%s\n", HISTORY[i]);
+        for (int i = FRONT; i < 20; i++, count++)
+            tempArray[count] = HISTORY[i];
+        for (int i = 0; i <= REAR; i++, count++)
+            tempArray[count] = HISTORY[i];
     }
+
+    for (int i = count - n; i < count; i++)
+        printf("%s\n", tempArray[i]);
 }

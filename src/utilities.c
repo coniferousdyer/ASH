@@ -7,6 +7,18 @@
 #include <stdlib.h>
 #include <sys/wait.h>
 
+/*--------------------------------------------------------------------------------*
+ * Function to check if a string can be converted to a number (before using atoi) *
+ *--------------------------------------------------------------------------------*/
+_Bool isInteger(char *str)
+{
+    for (int i = 0; str[i] != '\0'; i++)
+        if (str[i] > '9' || str[i] < '0')
+            return 0;
+
+    return 1;
+}
+
 /*-----------------------------------------------------*
  * Function to insert a process into the process array *
  *-----------------------------------------------------*/
@@ -79,7 +91,7 @@ void saveHistory()
     char path[MAX_PATH_LENGTH + 101];
     sprintf(path, "%s/%s", HOME, "history.txt");
 
-    FILE *fp = fopen(path, "w+");
+    FILE *fp = fopen(path, "w");
 
     // Writing each command to the file
     if (REAR >= FRONT)
@@ -176,8 +188,9 @@ void parseInput(char *inputString, char *parsedString)
                     {
                         // Finding the index where " occurs
                         int j;
-                        for (j = i + 1; inputString[j] == ' '; j++)
-                            ;
+                        for (j = i + 1; inputString[j] == ' ' || inputString[j] == '\t'; j++)
+                            if (inputString[j] == '\t')
+                                inputString[j] = ' ';
 
                         if (inputString[j] == '\"' || inputString[j] == '\0')
                         {
@@ -277,6 +290,12 @@ void execCommand(char *args[], int argc, _Bool flag)
         }
         else if (argc == 2)
         {
+            if (!isInteger(args[1]))
+            {
+                printf("ERROR: Invalid argument specified. Please try again.\n");
+                return;
+            }
+
             pid_t pid = atoi(args[1]);
             pinfo(pid);
         }
@@ -291,6 +310,12 @@ void execCommand(char *args[], int argc, _Bool flag)
         if (argc <= 2)
         {
             printf("ERROR: Too few arguments specified. Please try again.\n");
+            return;
+        }
+
+        if (!isInteger(args[1]))
+        {
+            printf("ERROR: Invalid argument specified. Please try again.\n");
             return;
         }
 
@@ -320,7 +345,39 @@ void execCommand(char *args[], int argc, _Bool flag)
     // Checking if history was entered
     else if (strcmp(args[0], "history") == 0)
     {
-        history(20);
+        if (argc == 1)
+        {
+            if (HISTORYNO < 10)
+                history(HISTORYNO);
+            else
+                history(10);
+        }
+        else if (argc == 2)
+        {
+            if (!isInteger(args[1]))
+            {
+                printf("ERROR: Invalid argument specified. Please try again.\n");
+                return;
+            }
+
+            int n = atoi(args[1]);
+
+            if (n > 20)
+                printf("ERROR: Not more than 20 commands can be listed.\n");
+            else if (n < 0)
+            {
+                printf("ERROR: Invalid argument given. Please try again.\n");
+                return;
+            }
+
+            if (HISTORYNO < n)
+                history(HISTORYNO);
+            else
+                history(n);
+        }
+        else
+            printf("ERROR: Too few arguments specified. Please try again.\n");
+
         return;
     }
 
@@ -348,7 +405,12 @@ void execCommand(char *args[], int argc, _Bool flag)
 
         // Executing the given command, replacing the address space of the child process
         if (execvp(args[0], args))
+        {
             printf("ERROR: The command does not exist. Please try again.\n");
+
+            // To exit the new child process created
+            exit(0);
+        }
     }
     else
     {
@@ -452,40 +514,14 @@ void tokenizeAndExec(char *args[])
         // The number of command-line arguments
         int argc = 0;
         _Bool space = 0, Echo = 0;
-
-        // Checking if the command entered was "echo"
-        if (strncmp(COMMANDSTRING, "echo", 4) == 0)
-            Echo = 1;
+        char CommandStringCopy[strlen(COMMANDSTRING) + 1];
 
         // Tokenizing the command
         char *token = strtok(COMMANDSTRING, " ");
         while (token != NULL)
         {
-            // If previous token ended in a backslash and command is not echo, concatenate current token with previous token
-            if (!Echo && space == 1)
-            {
-                // Creating a temporary string to store the concatenated data
-                char tempString[strlen(args[argc - 1]) + strlen(token) + 2];
-                strcpy(tempString, args[argc - 1]);
-                strcat(tempString, " ");
-                strcat(tempString, token);
-                strcpy(args[argc - 1], tempString);
-
-                space = 0;
-            }
-            else
-            {
-                args[argc] = token;
-                ++argc;
-            }
-
-            // Accounting for backslashes
-            if (!Echo && args[argc - 1][strlen(args[argc - 1]) - 1] == '\\')
-            {
-                space = 1;
-                args[argc - 1][strlen(args[argc - 1]) - 1] = '\0';
-            }
-
+            args[argc] = token;
+            ++argc;
             token = strtok(NULL, " ");
         }
 
