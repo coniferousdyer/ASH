@@ -58,9 +58,14 @@ void DeleteProcess(int pid, char nameString[])
  *---------------------------------------------------------------*/
 void initHistory()
 {
-    // Opening file if it exists, else creating it
-    char path[MAX_PATH_LENGTH + 101];
-    sprintf(path, "%s/%s", HOME, "history.txt");
+    // Opening file if it exists in the directory of the executable
+    char path[MAX_PATH_LENGTH + 101] = "";
+    readlink("/proc/self/exe", path, MAX_PATH_LENGTH + 101);
+    int pos = strlen(path) - 1;
+    for (; pos >= 0 && path[pos] != '/'; pos--)
+        ;
+    path[pos + 1] = '\0';
+    strcat(path, "history.txt");
 
     FILE *fp = fopen(path, "r");
 
@@ -88,8 +93,13 @@ void initHistory()
 void saveHistory()
 {
     // Opening file if it exists, else creating it
-    char path[MAX_PATH_LENGTH + 101];
-    sprintf(path, "%s/%s", HOME, "history.txt");
+    char path[MAX_PATH_LENGTH + 101] = "";
+    readlink("/proc/self/exe", path, MAX_PATH_LENGTH + 101);
+    int pos = strlen(path) - 1;
+    for (; pos >= 0 && path[pos] != '/'; pos--)
+        ;
+    path[pos + 1] = '\0';
+    strcat(path, "history.txt");
 
     FILE *fp = fopen(path, "w");
 
@@ -142,7 +152,7 @@ void signalHandler(int signal)
 void parseInput(char *inputString, char *parsedString)
 {
     int len = 0;
-    _Bool doubleQuotes = 0;
+    _Bool doubleQuotes = 0, singleQuotes = 0;
 
     for (int i = 0; inputString[i] != '\0'; i++)
     {
@@ -153,6 +163,15 @@ void parseInput(char *inputString, char *parsedString)
                 doubleQuotes = 0;
             else
                 doubleQuotes = 1;
+        }
+
+        // If the current character is a single quote
+        if (inputString[i] == '\'')
+        {
+            if (singleQuotes)
+                singleQuotes = 0;
+            else
+                singleQuotes = 1;
         }
 
         // Checking if it's the first or the last character; if last character, there should not be a space before
@@ -200,6 +219,28 @@ void parseInput(char *inputString, char *parsedString)
                     }
                 }
 
+                // Account for spaces before and after single quotes
+                if (inputString[i] == ' ' && singleQuotes)
+                {
+                    // If preceding character was a single quote
+                    if (inputString[i - 1] == '\'')
+                        continue;
+                    else
+                    {
+                        // Finding the index where ' occurs
+                        int j;
+                        for (j = i + 1; inputString[j] == ' ' || inputString[j] == '\t'; j++)
+                            if (inputString[j] == '\t')
+                                inputString[j] = ' ';
+
+                        if (inputString[j] == '\'' || inputString[j] == '\0')
+                        {
+                            singleQuotes = 0;
+                            i = j;
+                        }
+                    }
+                }
+
                 parsedString[len] = inputString[i];
                 ++len;
             }
@@ -221,7 +262,7 @@ void execCommand(char *args[], int argc, _Bool flag)
         return;
 
     // Adding the command to history. If flag = 1, add to history
-    if (strcmp(args[0], "history") != 0 && flag)
+    if (strcmp(args[0], "history") != 0 && strcmp(args[0], "exit") != 0 && flag)
     {
         if (HISTORYNO == 20)
             deleteFromHistory();
@@ -491,19 +532,10 @@ void tokenizeAndExec(char *args[])
     // The command loop
     while (semicolonPos < len)
     {
-        _Bool doubleQuotes = 0;
-
-        // Looping through command string until ; which is not within double quotes is found or end of string is reached
+        // Looping through command string until ; is found or end of string is reached
         for (; semicolonPos != len; semicolonPos++)
-        {
-            if (INPUTSTRING[semicolonPos] == '\"' && !doubleQuotes)
-                doubleQuotes = 1;
-            else if (INPUTSTRING[semicolonPos] == '\"' && doubleQuotes)
-                doubleQuotes = 0;
-
-            if (INPUTSTRING[semicolonPos] == ';' && !doubleQuotes)
+            if (INPUTSTRING[semicolonPos] == ';')
                 break;
-        }
 
         INPUTSTRING[semicolonPos] = '\0';
         ++semicolonPos;
