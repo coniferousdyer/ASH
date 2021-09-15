@@ -16,6 +16,9 @@ void pinfo(int pid);
 // Function to count the digits of a number
 int countDigits(long int n);
 
+// Function to split the path into directory path and file name
+void splitPath(char *path, char *fileName);
+
 // Function to compute size and column lengths
 void totalSize(char *path, int numFlag, int colLengths[]);
 

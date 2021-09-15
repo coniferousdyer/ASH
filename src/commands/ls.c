@@ -21,6 +21,21 @@ int countDigits(long int n)
     return count;
 }
 
+// Function to split the path into directory path and file name
+void splitPath(char *path, char *fileName)
+{
+    int i;
+    for (i = strlen(path) - 1; i >= 0 && path[i] != '/'; i--)
+        ;
+
+    strcpy(fileName, path + i + 1);
+
+    if (i == -1)
+        strcpy(path, ".");
+    else
+        path[i + 1] = '\0';
+}
+
 // Function to compute size and column lengths
 int totalSize(char *path, int numFlag, int colLengths[])
 {
@@ -65,22 +80,59 @@ int totalSize(char *path, int numFlag, int colLengths[])
 // Function to list the contents of a directory
 void ls(int numFlag, char *path)
 {
+    // Checking if path points to a file
+    _Bool fileFlag = 0;
+    char fileName[MAX_FILE_LENGTH + 1];
+    struct stat f;
+    stat(path, &f);
+    if (S_ISREG(f.st_mode))
+        fileFlag = 1;
+
     DIR *directory;
+    int total;
     struct dirent **entry;
-    int total = scandir(path, &entry, NULL, alphasort);
+    if (fileFlag)
+        splitPath(path, fileName);
+    total = scandir(path, &entry, NULL, alphasort);
 
     if (total >= 0)
     {
         // If -a was provided
         if (numFlag == 1)
             for (int i = 0; i < total; i++)
+            {
+                // If we are searching only for a particular file
+                if (fileFlag && strcmp(entry[i]->d_name, fileName) != 0)
+                {
+                    if (i + 1 == total)
+                        printf("ERROR: The file may not exist or may be a hidden file.\n");
+                    continue;
+                }
+
                 printf("%s\n", entry[i]->d_name);
+
+                if (fileFlag)
+                    break;
+            }
 
         // If no -a was provided
         else if (numFlag == 0)
             for (int i = 0; i < total; i++)
+            {
+                // If we are searching only for a particular file
+                if (fileFlag && strcmp(entry[i]->d_name, fileName) != 0)
+                {
+                    if (i + 1 == total)
+                        printf("ERROR: The file may not exist or may be a hidden file.\n");
+                    continue;
+                }
+
                 if (entry[i]->d_name[0] != '.')
                     printf("%s\n", entry[i]->d_name);
+
+                if (fileFlag)
+                    break;
+            }
     }
     else
     {
@@ -92,9 +144,20 @@ void ls(int numFlag, char *path)
 // Function to list the contents of a directory with permissions and other information
 void lsl(int numFlag, char *path)
 {
+    // Checking if path points to a file
+    _Bool fileFlag = 0;
+    char fileName[MAX_FILE_LENGTH + 1];
+    struct stat f;
+    stat(path, &f);
+    if (S_ISREG(f.st_mode))
+        fileFlag = 1;
+
     DIR *directory;
+    int total;
     struct dirent **entry;
-    int total = scandir(path, &entry, NULL, alphasort);
+    if (fileFlag)
+        splitPath(path, fileName);
+    total = scandir(path, &entry, NULL, alphasort);
 
     if (total >= 0)
     {
@@ -106,11 +169,21 @@ void lsl(int numFlag, char *path)
             printf("ERROR: Invalid path specified. Please try again.\n");
             return;
         }
-        printf("total %d\n", tSize);
+
+        if (!fileFlag)
+            printf("total %d\n", tSize);
 
         // Looping through the contents of the directory
         for (int i = 0; i < total; i++)
         {
+            // If we are searching only for a particular file
+            if (fileFlag && strcmp(entry[i]->d_name, fileName) != 0)
+            {
+                if (i + 1 == total)
+                    printf("ERROR: The file may not exist or may be a hidden file.\n");
+                continue;
+            }
+
             // If it is a hidden file/directory, i.e. when no -a was provided
             if (numFlag == 0 && entry[i]->d_name[0] == '.')
                 continue;
@@ -146,6 +219,9 @@ void lsl(int numFlag, char *path)
             strcat(permissionString, (s.st_mode & S_IXOTH) ? "x" : "-");
 
             printf("%s %*ld %*s %*s %*ld %s %s\n", permissionString, colLengths[0], s.st_nlink, colLengths[1], getpwuid(s.st_uid)->pw_name, colLengths[2], getgrgid(s.st_gid)->gr_name, colLengths[3], s.st_size, timeString, entry[i]->d_name);
+
+            if (fileFlag)
+                break;
         }
     }
     else

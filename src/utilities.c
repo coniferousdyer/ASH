@@ -499,7 +499,7 @@ void displayPrompt()
         printf("<%s@%s:~%s> ", USERNAME, HOSTNAME, relativePath);
     }
     else
-        printf("<%s@%s:~%s> ", USERNAME, HOSTNAME, PATH);
+        printf("<%s@%s:%s> ", USERNAME, HOSTNAME, PATH);
 
     printf("\033[0m");
 }
