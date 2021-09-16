@@ -21,6 +21,22 @@ int countDigits(long int n)
     return count;
 }
 
+// Function to check if a file/directory was last modified 6 or more months ago
+_Bool moreThanSixMonths(time_t creationTime)
+{
+    // Obtaining current time
+    time_t currentTime;
+    time(&currentTime);
+
+    // Calculating difference in seconds between current and creation time
+    double diff = difftime(currentTime, creationTime);
+
+    if (diff >= (double)15780000)
+        return 1;
+    else
+        return 0;
+}
+
 // Function to split the path into directory path and file name
 void splitPath(char *path, char *fileName)
 {
@@ -200,7 +216,11 @@ void lsl(int numFlag, char *path)
             struct tm *creationTime = localtime(&(s.st_ctime));
             char timeString[30];
 
-            strftime(timeString, 24, "%b %d %H:%M", creationTime);
+            // Checking if file was modified more than 6 months ago
+            if (moreThanSixMonths(s.st_ctime))
+                strftime(timeString, 24, "%b %d %Y", creationTime);
+            else
+                strftime(timeString, 24, "%b %d %H:%M", creationTime);
 
             // String to store the permissions
             char permissionString[11];
@@ -218,7 +238,7 @@ void lsl(int numFlag, char *path)
             strcat(permissionString, (s.st_mode & S_IWOTH) ? "w" : "-");
             strcat(permissionString, (s.st_mode & S_IXOTH) ? "x" : "-");
 
-            printf("%s %*ld %*s %*s %*ld %s %s\n", permissionString, colLengths[0], s.st_nlink, colLengths[1], getpwuid(s.st_uid)->pw_name, colLengths[2], getgrgid(s.st_gid)->gr_name, colLengths[3], s.st_size, timeString, entry[i]->d_name);
+            printf("%s %*ld %*s %*s %*ld %-12s %s\n", permissionString, colLengths[0], s.st_nlink, colLengths[1], getpwuid(s.st_uid)->pw_name, colLengths[2], getgrgid(s.st_gid)->gr_name, colLengths[3], s.st_size, timeString, entry[i]->d_name);
 
             if (fileFlag)
                 break;

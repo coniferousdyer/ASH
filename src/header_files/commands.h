@@ -16,6 +16,9 @@ void pinfo(int pid);
 // Function to count the digits of a number
 int countDigits(long int n);
 
+// Function to check if a file/directory was last modified 6 or more months ago
+_Bool moreThanSixMonths(long creationTime);
+
 // Function to split the path into directory path and file name
 void splitPath(char *path, char *fileName);
 
