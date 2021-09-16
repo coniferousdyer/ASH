@@ -135,9 +135,9 @@ void signalHandler(int signal)
             DeleteProcess(pid, name);
 
             if (WIFEXITED(STATUS))
-                printf("\n%s with pid %d exited normally.\n", name, pid);
+                fprintf(stderr, "\n%s with pid %d exited normally.\n", name, pid);
             else if (WIFSIGNALED(STATUS))
-                printf("\n%s with pid %d exited abnormally.\n", name, pid);
+                fprintf(stderr, "\n%s with pid %d exited abnormally.\n", name, pid);
 
             // Displaying the prompt
             displayPrompt();
@@ -274,7 +274,7 @@ void execCommand(char *args[], int argc, _Bool flag)
     {
         if (argc != 1)
         {
-            printf("ERROR: Too many arguments specified. Please try again.\n");
+            perror("Too many arguments specified");
             return;
         }
 
@@ -288,7 +288,7 @@ void execCommand(char *args[], int argc, _Bool flag)
         // Checking for correct number of arguments
         if (argc > 2)
         {
-            printf("ERROR: Too many arguments specified. Please try again.\n");
+            perror("Too many arguments specified");
             return;
         }
 
@@ -308,7 +308,7 @@ void execCommand(char *args[], int argc, _Bool flag)
         // Checking for correct number of arguments
         if (argc > 1)
         {
-            printf("ERROR: Too many arguments specified. Please try again.\n");
+            perror("Too many arguments specified");
             return;
         }
 
@@ -333,7 +333,7 @@ void execCommand(char *args[], int argc, _Bool flag)
         {
             if (!isInteger(args[1]))
             {
-                printf("ERROR: Invalid argument specified. Please try again.\n");
+                perror("Invalid argument specified");
                 return;
             }
 
@@ -341,7 +341,7 @@ void execCommand(char *args[], int argc, _Bool flag)
             pinfo(pid);
         }
         else
-            printf("ERROR: Too many arguments specified. Please try again.\n");
+            perror("Too many arguments specified");
 
         return;
     }
@@ -350,13 +350,13 @@ void execCommand(char *args[], int argc, _Bool flag)
     {
         if (argc <= 2)
         {
-            printf("ERROR: Too few arguments specified. Please try again.\n");
+            perror("Too few arguments specified");
             return;
         }
 
         if (!isInteger(args[1]))
         {
-            printf("ERROR: Invalid argument specified. Please try again.\n");
+            perror("Invalid argument specified");
             return;
         }
 
@@ -397,17 +397,17 @@ void execCommand(char *args[], int argc, _Bool flag)
         {
             if (!isInteger(args[1]))
             {
-                printf("ERROR: Invalid argument specified. Please try again.\n");
+                perror("Invalid argument specified");
                 return;
             }
 
             int n = atoi(args[1]);
 
             if (n > 20)
-                printf("ERROR: Not more than 20 commands can be listed.\n");
+                perror("Not more than 20 commands can be listed");
             else if (n < 0)
             {
-                printf("ERROR: Invalid argument given. Please try again.\n");
+                perror("Invalid argument specified");
                 return;
             }
 
@@ -417,7 +417,7 @@ void execCommand(char *args[], int argc, _Bool flag)
                 history(n);
         }
         else
-            printf("ERROR: Too few arguments specified. Please try again.\n");
+            perror("Too few arguments specified");
 
         return;
     }
@@ -429,7 +429,7 @@ void execCommand(char *args[], int argc, _Bool flag)
 
     if (pid < 0)
     {
-        printf("ERROR: A new process could not be created.\n");
+        perror("Could not create new process");
         return;
     }
 
@@ -447,7 +447,7 @@ void execCommand(char *args[], int argc, _Bool flag)
         // Executing the given command, replacing the address space of the child process
         if (execvp(args[0], args))
         {
-            printf("ERROR: The command does not exist. Please try again.\n");
+            perror("Non-existent command");
 
             // To exit the new child process created
             exit(0);
@@ -464,7 +464,8 @@ void execCommand(char *args[], int argc, _Bool flag)
         {
             if (CHILDNO == MAX_CHILD_NO)
             {
-                printf("ERROR: The maximum number of background processes has been reached. The process is being executed as a foreground process.\n");
+                perror("Maximum number of background processes reached");
+                fprintf(stderr, "The process is being executed as a foreground process.\n");
                 waitpid(pid, &STATUS, 0);
                 return;
             }

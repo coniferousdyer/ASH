@@ -36,7 +36,7 @@ void changeDirectory(char *subpath)
             if (strcmp(precedingPath, "") != 0)
                 if (chdir(precedingPath) != 0)
                 {
-                    printf("ERROR: Invalid path specified. Please try again.\n");
+                    perror("Invalid path specified");
                     return;
                 }
 
@@ -51,7 +51,7 @@ void changeDirectory(char *subpath)
 
     if (chdir(subpath) != 0)
     {
-        printf("ERROR: Invalid path specified. Please try again.\n");
+        perror("Invalid path specified");
         return;
     }
 

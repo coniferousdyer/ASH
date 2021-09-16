@@ -105,7 +105,7 @@ void ls(int numFlag, char *path)
                 if (fileFlag && strcmp(entry[i]->d_name, fileName) != 0)
                 {
                     if (i + 1 == total)
-                        printf("ERROR: The file may not exist or may be a hidden file.\n");
+                        perror("Non-existent or hidden file");
                     continue;
                 }
 
@@ -123,7 +123,7 @@ void ls(int numFlag, char *path)
                 if (fileFlag && strcmp(entry[i]->d_name, fileName) != 0)
                 {
                     if (i + 1 == total)
-                        printf("ERROR: The file may not exist or may be a hidden file.\n");
+                        perror("Non-existent or hidden file");
                     continue;
                 }
 
@@ -136,7 +136,7 @@ void ls(int numFlag, char *path)
     }
     else
     {
-        printf("ERROR: Invalid path specified. Please try again.\n");
+        perror("Invalid path specified");
         return;
     }
 }
@@ -166,7 +166,7 @@ void lsl(int numFlag, char *path)
         int tSize = totalSize(path, numFlag, colLengths);
         if (tSize == -1)
         {
-            printf("ERROR: Invalid path specified. Please try again.\n");
+            perror("Invalid path specified");
             return;
         }
 
@@ -180,7 +180,7 @@ void lsl(int numFlag, char *path)
             if (fileFlag && strcmp(entry[i]->d_name, fileName) != 0)
             {
                 if (i + 1 == total)
-                    printf("ERROR: The file may not exist or may be a hidden file.\n");
+                    perror("Non-existent or hidden file");
                 continue;
             }
 
@@ -226,7 +226,7 @@ void lsl(int numFlag, char *path)
     }
     else
     {
-        printf("ERROR: Invalid path specified. Please try again.\n");
+        perror("Invalid path specified");
         return;
     }
 }
@@ -264,7 +264,7 @@ void lsHandler(char *args[], int argc)
         case ':':
             break;
         case '?':
-            printf("ERROR: Invalid flag entered. Please try again.\n");
+            perror("Invalid flag");
             return;
         }
 

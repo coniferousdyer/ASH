@@ -57,7 +57,7 @@ void history(int n)
 {
     if (HISTORYNO == 0)
     {
-        printf("No history.\n");
+        perror("No history");
         return;
     }
 

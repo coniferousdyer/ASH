@@ -14,7 +14,7 @@ void pinfo(pid_t pid)
     // If process does not exist
     if (fp == NULL)
     {
-        printf("ERROR: Process with ID %d was not found.\n", pid);
+        perror("Process not found");
         return;
     }
 
