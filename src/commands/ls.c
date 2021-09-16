@@ -22,15 +22,16 @@ int countDigits(long int n)
 }
 
 // Function to check if a file/directory was last modified 6 or more months ago
-_Bool moreThanSixMonths(time_t creationTime)
+_Bool moreThanSixMonths(time_t modTime)
 {
     // Obtaining current time
     time_t currentTime;
     time(&currentTime);
 
-    // Calculating difference in seconds between current and creation time
-    double diff = difftime(currentTime, creationTime);
+    // Calculating difference in seconds between current and last modification time
+    double diff = difftime(currentTime, modTime);
 
+    // 6 months = 15780000 seconds
     if (diff >= (double)15780000)
         return 1;
     else
@@ -212,15 +213,15 @@ void lsl(int numFlag, char *path)
 
             stat(fullPath, &s);
 
-            // Obtaining creation time of file/directory
-            struct tm *creationTime = localtime(&(s.st_ctime));
+            // Obtaining last modification time of file/directory
+            struct tm *modTime = localtime(&(s.st_mtime));
             char timeString[30];
 
             // Checking if file was modified more than 6 months ago
-            if (moreThanSixMonths(s.st_ctime))
-                strftime(timeString, 24, "%b %d %Y", creationTime);
+            if (moreThanSixMonths(s.st_mtime))
+                strftime(timeString, 24, "%b %d %Y", modTime);
             else
-                strftime(timeString, 24, "%b %d %H:%M", creationTime);
+                strftime(timeString, 24, "%b %d %H:%M", modTime);
 
             // String to store the permissions
             char permissionString[11];
