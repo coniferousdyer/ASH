@@ -37,7 +37,7 @@ int main(void)
     initHistory();
 
     // Printing intro
-    printf("\033[0;34m\nWELCOME TO A-SHELL!\nYour home path is %s\n\n\033[0m", HOME);
+    printf("\033[0;34m\nWELCOME TO ASH!\nYour home path is %s\n\n\033[0m", HOME);
 
     // Core of the program - the infinite loop accepting commands as input
     while (1)
