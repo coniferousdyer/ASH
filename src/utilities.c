@@ -261,8 +261,21 @@ void execCommand(char *args[], int argc, _Bool flag)
     if (argc == 0)
         return;
 
+    // Merging the arguments in order to compare with the last command in history
+    char command[MAX_COMMAND_LENGTH + 1] = "";
+    _Bool repeated = 0;
+    for (int i = 0; i < argc; i++)
+    {
+        strcat(command, args[i]);
+        if (i < argc - 1)
+            strcat(command, " ");
+    }
+
+    if (strcmp(command, HISTORY[REAR]) == 0)
+        repeated = 1;
+
     // Adding the command to history. If flag = 1, add to history
-    if (strcmp(args[0], "history") != 0 && strcmp(args[0], "exit") != 0 && flag)
+    if (strcmp(args[0], "history") != 0 && strcmp(args[0], "exit") != 0 && !repeated && flag)
     {
         if (HISTORYNO == 20)
             deleteFromHistory();
