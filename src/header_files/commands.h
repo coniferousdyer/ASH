@@ -35,7 +35,7 @@ void lsl(int numFlag, char *path);
 void lsHandler(char *args[], int argc);
 
 // Function to add command to history
-void addToHistory(char *args[], int argc);
+void addToHistory(char *command);
 
 // Function to delete earliest command from history
 void deleteFromHistory();

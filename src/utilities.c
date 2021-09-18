@@ -8,6 +8,28 @@
 #include <sys/wait.h>
 #include <ctype.h>
 
+/*------------------------------------------------------------------------------------*
+ * Function to check if "exit", "history" or just white space characters were entered *
+ *------------------------------------------------------------------------------------*/
+_Bool ifExitOrHistory(char *str)
+{
+    int pos = 0;
+    while (str[pos] == ' ' || str[pos] == '\t')
+        pos++;
+
+    // If only white space characters were entered
+    if (str[pos] == '\0')
+        return 1;
+    // Checking for "exit"
+    else if (strncmp(str + pos, "exit ", 5) == 0 || strncmp(str + pos, "exit\t", 5) == 0 || strncmp(str + pos, "exit\0", 5) == 0)
+        return 1;
+    // Checking for "history"
+    else if (strncmp(str + pos, "history ", 8) == 0 || strncmp(str + pos, "history\t", 8) == 0 || strncmp(str + pos, "history\0", 8) == 0)
+        return 1;
+
+    return 0;
+}
+
 /*--------------------------------------------------------------------------------*
  * Function to check if a string can be converted to a number (before using atoi) *
  *--------------------------------------------------------------------------------*/
@@ -254,34 +276,13 @@ void parseInput(char *inputString, char *parsedString)
 /*-----------------------------------------------*
  * Function to execute the corresponding command *
  *-----------------------------------------------*/
-void execCommand(char *args[], int argc, _Bool flag)
+void execCommand(char *args[], int argc)
 {
     /*-----------BUILTIN COMMANDS-----------*/
 
     // If nothing was entered
     if (argc == 0)
         return;
-
-    // Merging the arguments in order to compare with the last command in history
-    char command[MAX_COMMAND_LENGTH + 1] = "";
-    _Bool repeated = 0;
-    for (int i = 0; i < argc; i++)
-    {
-        strcat(command, args[i]);
-        if (i < argc - 1)
-            strcat(command, " ");
-    }
-
-    if (strcmp(command, HISTORY[REAR]) == 0)
-        repeated = 1;
-
-    // Adding the command to history. If flag = 1, add to history
-    if (strcmp(args[0], "history") != 0 && strcmp(args[0], "exit") != 0 && !repeated && flag)
-    {
-        if (HISTORYNO == 20)
-            deleteFromHistory();
-        addToHistory(args, argc);
-    }
 
     // Exiting the shell
     if (strcmp(args[0], "exit") == 0)
@@ -387,7 +388,7 @@ void execCommand(char *args[], int argc, _Bool flag)
 
         // Calling execCommand to execute the command the required number of times
         for (int i = 0; i < times; i++)
-            execCommand(argsCopy, argc, 0);
+            execCommand(argsCopy, argc);
 
         return;
     }
@@ -610,6 +611,19 @@ void tokenizeAndExec(char *args[])
     // Taking command as input
     takeInput();
 
+    // Merging the arguments in order to compare with the last command in history
+    _Bool repeated = 0;
+    if (strcmp(INPUTSTRING, HISTORY[REAR]) == 0)
+        repeated = 1;
+
+    // Adding the command to history
+    if (!ifExitOrHistory(INPUTSTRING) && !repeated)
+    {
+        if (HISTORYNO == 20)
+            deleteFromHistory();
+        addToHistory(INPUTSTRING);
+    }
+
     // Splitting the command string into commands
     char *command = INPUTSTRING;
     // Marks the position of the next ; to replace it with null character
@@ -649,7 +663,7 @@ void tokenizeAndExec(char *args[])
         args[argc] = NULL;
 
         // Executing the command
-        execCommand(args, argc, 1);
+        execCommand(args, argc);
 
         // Moving command pointer to next command
         command = INPUTSTRING + semicolonPos;

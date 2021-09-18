@@ -1,6 +1,9 @@
 #ifndef INPUT_H
 #define INPUT_H
 
+// Function to check if "exit", "history" or just white space characters were entered
+_Bool ifExitOrHistory(char *str);
+
 // Function to check if a string can be converted to a number (before using atoi)
 _Bool isInteger(char *str);
 
@@ -23,7 +26,7 @@ void signalHandler(int signal);
 void parseInput(char *inputString, char *parsedString);
 
 // Function to execute the corresponding command
-void execCommand(char *args[], int argc, _Bool flag);
+void execCommand(char *args[], int argc);
 
 // Function to display a prompt to the user
 void displayPrompt();

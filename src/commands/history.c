@@ -3,16 +3,8 @@
 #include <string.h>
 
 // Function to add command to history
-void addToHistory(char *args[], int argc)
+void addToHistory(char *command)
 {
-    char command[MAX_COMMAND_LENGTH + 1] = "";
-    for (int i = 0; i < argc; i++)
-    {
-        strcat(command, args[i]);
-        if (i < argc - 1)
-            strcat(command, " ");
-    }
-
     // If less than 20 commands present
     if (HISTORYNO < 20)
     {
