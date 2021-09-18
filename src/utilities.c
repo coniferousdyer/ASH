@@ -531,6 +531,7 @@ void takeInput()
 
     int len = 0;
     char c;
+    int historyN = HISTORYNO;
 
     // Reading in characters from stdin
     while (read(STDIN_FILENO, &c, 1) == 1)
@@ -546,20 +547,52 @@ void takeInput()
                 char buffer[3];
                 buffer[2] = '\0';
                 if (read(STDIN_FILENO, buffer, 2) == 2)
+                    // "UP" arrow key
                     if (strcmp(buffer, "[A") == 0)
                     {
+                        if (historyN >= 1 && historyN <= HISTORYNO)
+                        {
+                            // If we are on the current command and something has been entered
+                            if (historyN == HISTORYNO && len > 0)
+                                continue;
+
+                            --historyN;
+                            len = recallCommand(historyN, len);
+                        }
                     }
-                    // printf("UP");
+                    // "DOWN" arrow key
                     else if (strcmp(buffer, "[B") == 0)
                     {
+                        // If we are on the last command in history
+                        if (historyN == HISTORYNO - 1)
+                        {
+                            // Erasing the entire command and copying an empty string to INPUTSTRING
+                            while (len--)
+                                // If the character is a TAB character
+                                if (INPUTSTRING[len - 1] == 9)
+                                    for (int i = 0; i < 8; i++)
+                                        printf("\b");
+                                else
+                                    printf("\b \b");
+
+                            ++historyN;
+                            strcpy(INPUTSTRING, "");
+                            len = 0;
+                        }
+                        else if (historyN >= 0 && historyN <= HISTORYNO - 1)
+                        {
+                            ++historyN;
+                            len = recallCommand(historyN, len);
+                        }
                     }
-                // printf("DOWN");
             }
             // TAB character
             else if (c == 9)
             {
                 // TABS should be 8 spaces
-                printf("\t");
+                for (int i = 0; i < 8; i++)
+                    printf(" ");
+
                 INPUTSTRING[len++] = c;
             }
             // backspace
