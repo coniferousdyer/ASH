@@ -27,7 +27,7 @@ int recallCommand(int n, int len)
     while (len--)
     {
         // If the character is a TAB character
-        if (INPUTSTRING[len - 1] == 9)
+        if (INPUTSTRING[len] == 9)
             for (int i = 0; i < 8; i++)
                 printf("\b");
         else
