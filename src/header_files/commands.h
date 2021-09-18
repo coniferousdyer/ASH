@@ -52,7 +52,7 @@ void disableRawMode();
 // Function that enables raw mode for the terminal
 void enableRawMode();
 
-// Function to recall the previous command from history
+// Function to recall the previous/next command from history on pressing UP/DOWN arrow key
 int recallCommand(int n, int len);
 
 #endif
