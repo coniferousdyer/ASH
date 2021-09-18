@@ -43,4 +43,13 @@ void deleteFromHistory();
 // Function to print the history of commands
 void history(int n);
 
+// Function that displays an error message and exits
+void die(const char *s);
+
+// Function that restores the original terminal attributes
+void disableRawMode();
+
+// Function that enables raw mode for the terminal
+void enableRawMode();
+
 #endif

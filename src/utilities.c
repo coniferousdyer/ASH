@@ -6,6 +6,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <sys/wait.h>
+#include <ctype.h>
 
 /*--------------------------------------------------------------------------------*
  * Function to check if a string can be converted to a number (before using atoi) *
@@ -518,6 +519,80 @@ void displayPrompt()
     printf("\033[0m");
 }
 
+/*---------------------------------------------------* 
+ *Function to take input and store it in INPUTSTRING *
+ *---------------------------------------------------*/
+void takeInput()
+{
+    // Disabling buffering for stdout and enabling raw mode
+    setbuf(stdout, NULL);
+    enableRawMode();
+
+    int len = 0;
+    char c;
+
+    // Reading in characters from stdin
+    while (read(STDIN_FILENO, &c, 1) == 1)
+    {
+        if (iscntrl(c))
+        {
+            // newline character
+            if (c == 10)
+                break;
+            // UP and DOWN arrow keys
+            else if (c == 27)
+            {
+                char buffer[3];
+                buffer[2] = '\0';
+                if (read(STDIN_FILENO, buffer, 2) == 2)
+                    if (strcmp(buffer, "[A") == 0)
+                    {
+                    }
+                    // printf("UP");
+                    else if (strcmp(buffer, "[B") == 0)
+                    {
+                    }
+                // printf("DOWN");
+            }
+            // TAB character
+            else if (c == 9)
+            {
+                // TABS should be 8 spaces
+                printf("\t");
+                INPUTSTRING[len++] = c;
+            }
+            // backspace
+            else if (c == 127)
+            {
+                if (len > 0)
+                {
+                    // If the character is a TAB character
+                    if (INPUTSTRING[len - 1] == 9)
+                        for (int i = 0; i < 7; i++)
+                            printf("\b");
+
+                    INPUTSTRING[--len] = '\0';
+                    printf("\b \b");
+                }
+            }
+        }
+        else
+        {
+            INPUTSTRING[len++] = c;
+            printf("%c", c);
+        }
+    }
+
+    // Terminating the string
+    INPUTSTRING[len] = '\0';
+
+    // Disabling raw mode
+    disableRawMode();
+
+    // To print the output on a new line
+    printf("\n");
+}
+
 /*-------------------------------------------------------------*
  * Function to tokenize the input, account for backslashes and *
  * finally execute the command by calling execCommand          *
@@ -533,8 +608,7 @@ void tokenizeAndExec(char *args[])
     char disposedCharacter;
 
     // Taking command as input
-    scanf("%[^\n]s", INPUTSTRING);
-    scanf("%c", &disposedCharacter);
+    takeInput();
 
     // Splitting the command string into commands
     char *command = INPUTSTRING;

@@ -22,6 +22,7 @@ void changeDirectory(char *subpath)
     else if (strcmp(subpath, "~") == 0)
     {
         chdir(HOME);
+        strcpy(PREVIOUSPATH, tempPath);
         return;
     }
 

@@ -30,5 +30,6 @@ extern int CHILDNO;
 extern char HISTORY[20][MAX_COMMAND_LENGTH + 1];
 extern int HISTORYNO;
 extern int REAR, FRONT;
+extern struct termios ORIG_TERMIOS;
 
 #endif

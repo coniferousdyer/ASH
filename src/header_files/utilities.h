@@ -28,6 +28,9 @@ void execCommand(char *args[], int argc, _Bool flag);
 // Function to display a prompt to the user
 void displayPrompt();
 
+// Function to take input and store it in INPUTSTRING
+void takeInput();
+
 // Function to tokenize the input, account for backslashes and finally execute the command by calling execCommand
 void tokenizeAndExec(char *args[]);
 

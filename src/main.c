@@ -4,6 +4,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <signal.h>
+#include <termios.h>
 
 // Important global strings
 char HOSTNAME[HOST_NAME_MAX + 1];
@@ -18,6 +19,7 @@ int CHILDNO = 0;
 char HISTORY[20][MAX_COMMAND_LENGTH + 1];
 int HISTORYNO = 0;
 int REAR = -1, FRONT = -1;
+struct termios ORIG_TERMIOS;
 
 int main(void)
 {
