@@ -8,28 +8,6 @@
 #include <sys/wait.h>
 #include <ctype.h>
 
-/*------------------------------------------------------------------------------------*
- * Function to check if "exit", "history" or just white space characters were entered *
- *------------------------------------------------------------------------------------*/
-_Bool ifExitOrHistory(char *str)
-{
-    int pos = 0;
-    while (str[pos] == ' ' || str[pos] == '\t')
-        pos++;
-
-    // If only white space characters were entered
-    if (str[pos] == '\0')
-        return 1;
-    // Checking for "exit"
-    else if (strncmp(str + pos, "exit ", 5) == 0 || strncmp(str + pos, "exit\t", 5) == 0 || strncmp(str + pos, "exit\0", 5) == 0)
-        return 1;
-    // Checking for "history"
-    else if (strncmp(str + pos, "history ", 8) == 0 || strncmp(str + pos, "history\t", 8) == 0 || strncmp(str + pos, "history\0", 8) == 0)
-        return 1;
-
-    return 0;
-}
-
 /*--------------------------------------------------------------------------------*
  * Function to check if a string can be converted to a number (before using atoi) *
  *--------------------------------------------------------------------------------*/
@@ -489,13 +467,8 @@ void execCommand(char *args[], int argc)
 
             char path[MAX_FILE_LENGTH + 12];
 
-            // Formatting the process name
-            int i;
-            for (i = 0; args[0][i] == '.' || args[0][i] == '/'; i++)
-                ;
-
             // Inserting the process into the process list
-            InsertProcess(pid, args[0] + i);
+            InsertProcess(pid, args[0]);
         }
     }
 }
@@ -652,11 +625,12 @@ void tokenizeAndExec(char *args[])
         repeated = 1;
 
     // Adding the command to history
-    if (!ifExitOrHistory(INPUTSTRING) && !repeated)
+    if (!repeated)
     {
         if (HISTORYNO == 20)
             deleteFromHistory();
         addToHistory(INPUTSTRING);
+        saveHistory();
     }
 
     // Splitting the command string into commands
@@ -692,6 +666,13 @@ void tokenizeAndExec(char *args[])
             args[argc] = token;
             ++argc;
             token = strtok(NULL, " ");
+
+            // Checking if the number of arguments exceeds the maximum possible number
+            if (argc >= MAX_ARG_NO)
+            {
+                perror("Maximum number of arguments exceeded");
+                return;
+            }
         }
 
         // Null-terminating the array

@@ -122,7 +122,7 @@ exit
 
 * `commands.h`: Contains the declarations of all the functions present in the `commands` folder.
 * `util_variables.h`: Contains macros and important global variables used throughout the program.
-* `utilities.h`: Contains the declarations of all the functions present in `utilities.c`.
+* `utilities.h`: Contains the declarations of all the functions present in `utilities.c` Also contains the implementation of the `repeat` command.
 
 ### Commands
 
@@ -141,3 +141,8 @@ exit
 * `pwd.c`: Contains the implementation for the pwd command.
 
 * `terminal.c`: Contains the functions required to modify and obtain terminal attributes.
+
+## Assumptions
+
+* 6 months is exactly equal to 15778463 seconds.
+* The `exit` command is not to be stored in history.

@@ -31,8 +31,8 @@ _Bool moreThanSixMonths(time_t modTime)
     // Calculating difference in seconds between current and last modification time
     double diff = difftime(currentTime, modTime);
 
-    // 6 months = 15780000 seconds
-    if (diff >= (double)15780000)
+    // 6 months = 15778463 seconds
+    if (diff >= (double)15778463)
         return 1;
     else
         return 0;

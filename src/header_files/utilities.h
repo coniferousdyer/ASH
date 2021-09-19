@@ -1,9 +1,6 @@
 #ifndef INPUT_H
 #define INPUT_H
 
-// Function to check if "exit", "history" or just white space characters were entered
-_Bool ifExitOrHistory(char *str);
-
 // Function to check if a string can be converted to a number (before using atoi)
 _Bool isInteger(char *str);
 

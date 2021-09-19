@@ -35,7 +35,7 @@ int recallCommand(int n, int len)
     }
 
     // Copying the previous command to INPUTSTRING so that it can be manipulated
-    strcpy(INPUTSTRING, HISTORY[n]);
+    strcpy(INPUTSTRING, tempArray[n]);
 
     // Printing INPUTSTRING - there was an issue with printing tabs properly
     for (int i = 0; INPUTSTRING[i] != '\0'; i++)
