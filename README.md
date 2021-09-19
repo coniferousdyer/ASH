@@ -116,13 +116,13 @@ exit
 ## Code Division
 
 * `main.c`: Contains the main() function where execution starts.
-* `utilities.c`: Contains utility functions that are either used for input processing or performing general tasks.
+* `utilities.c`: Contains utility functions that are either used for input processing or performing general tasks. Also contains the implementation of the `repeat` command.
 
 ### Header Files
 
 * `commands.h`: Contains the declarations of all the functions present in the `commands` folder.
 * `util_variables.h`: Contains macros and important global variables used throughout the program.
-* `utilities.h`: Contains the declarations of all the functions present in `utilities.c` Also contains the implementation of the `repeat` command.
+* `utilities.h`: Contains the declarations of all the functions present in `utilities.c`.
 
 ### Commands
 
