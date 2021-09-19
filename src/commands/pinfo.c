@@ -38,7 +38,7 @@ void pinfo(pid_t pid)
     else
         printf("\n");
 
-    printf("Memory -- %lu\nExecutable Path -- ", vSize);
+    printf("Memory -- %lu bytes {Virtual Memory}\nExecutable Path -- ", vSize);
 
     // Deciding whether relative or absolute path is to be used by comparing the first strlen(HOME) characters
     if (strncmp(execPath, HOME, strlen(HOME)) == 0)
