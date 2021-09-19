@@ -288,6 +288,9 @@ void execCommand(char *args[], int argc)
         // Accounting for cd only
         if (argc == 1)
         {
+            char tempPath[MAX_PATH_LENGTH + 1];
+            getcwd(tempPath, MAX_PATH_LENGTH + 1);
+            strcpy(PREVIOUSPATH, tempPath);
             chdir(HOME);
             return;
         }
@@ -621,7 +624,7 @@ void tokenizeAndExec(char *args[])
 
     // Merging the arguments in order to compare with the last command in history
     _Bool repeated = 0;
-    if (strcmp(INPUTSTRING, HISTORY[REAR]) == 0)
+    if (strcmp(INPUTSTRING, HISTORY[REAR]) == 0 || strcmp(INPUTSTRING, "") == 0)
         repeated = 1;
 
     // Adding the command to history
