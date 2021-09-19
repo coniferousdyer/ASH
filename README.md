@@ -145,4 +145,4 @@ exit
 ## Assumptions
 
 * 6 months is exactly equal to 15778463 seconds.
-* The `exit` command is not to be stored in history.
+* By the process name supposed to be printed when a background process exits abnormally, we mean the name of the command used to run that background process.
