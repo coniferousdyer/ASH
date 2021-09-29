@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 
+// A special struct containing the state variable in addition to Process members
 typedef struct bgProcess
 {
     int jobNo;
