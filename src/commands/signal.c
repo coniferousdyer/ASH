@@ -78,6 +78,25 @@ void sigtstpHandler(int sig)
     signal(SIGTSTP, sigtstpHandler);
 }
 
+// Implementation of the sig command
+void sig(int jobNo, int sig)
+{
+    // Searching for the process
+    pid_t pid = -1;
+    for (int i = 0; i < CHILDNO; i++)
+        if (PROCESSLIST[i].jobNo == jobNo)
+        {
+            pid = PROCESSLIST[i].pid;
+            break;
+        }
+
+    // Sending the signal to the process
+    if (pid == -1)
+        perror("Process not found");
+    else
+        kill(pid, sig);
+}
+
 // Sets up the required signal handler functions
 void installSignals()
 {

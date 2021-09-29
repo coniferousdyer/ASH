@@ -64,6 +64,9 @@ void sigintHandler(int sig);
 // The signal handler which shifts the foreground process to background
 void sigtstpHandler(int sig);
 
+// Implementation of the sig command
+void sig(int jobNo, int sig);
+
 // Sets up the required signal handler functions
 void installSignals();
 

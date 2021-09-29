@@ -333,6 +333,38 @@ void execCommand(char *args[], int argc)
         jobsHandler(args, argc);
         return;
     }
+    else if (strcmp(args[0], "sig") == 0)
+    {
+        if (argc > 3)
+        {
+            perror("Too many arguments specified");
+            return;
+        }
+        else if (argc < 3)
+        {
+            perror("Too less arguments specified");
+            return;
+        }
+
+        if (!isInteger(args[1]))
+        {
+            perror("Invalid argument specified");
+            return;
+        }
+
+        if (!isInteger(args[2]))
+        {
+            perror("Invalid argument specified");
+            return;
+        }
+
+        int jobNo = atoi(args[1]);
+        int signal = atoi(args[2]);
+
+        sig(jobNo, signal);
+
+        return;
+    }
 
     /*-----------SYSTEM COMMANDS-----------*/
 
