@@ -17,7 +17,8 @@ typedef struct Process
 #define MAX_ARG_NO (int)1e4
 #define MAX_CHILD_NO 512
 
-// Important global strings
+// Important global variables
+extern int SHELLPID;
 extern char HOSTNAME[HOST_NAME_MAX + 1];
 extern char USERNAME[LOGIN_NAME_MAX + 1];
 extern char INPUTSTRING[MAX_COMMAND_LENGTH + 1];
@@ -31,5 +32,6 @@ extern char HISTORY[20][MAX_COMMAND_LENGTH + 1];
 extern int HISTORYNO;
 extern int REAR, FRONT;
 extern struct termios ORIG_TERMIOS;
+extern int FGPID;
 
 #endif

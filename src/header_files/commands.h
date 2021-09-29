@@ -55,4 +55,28 @@ void enableRawMode();
 // Function to recall the previous/next command from history on pressing UP/DOWN arrow key
 int recallCommand(int n, int len);
 
+// The signal handler which reaps background processes
+void sigchldHandler(int sig);
+
+// The signal handler which interrupts the foreground process
+void sigintHandler(int sig);
+
+// The signal handler which shifts the foreground process to background
+void sigtstpHandler(int sig);
+
+// Sets up the required signal handler functions
+void installSignals();
+
+// Function to read previous session commands from external file
+void initHistory();
+
+// Function to save current session's history to external file
+void saveHistory();
+
+// Displays the current background processes
+void jobs(int param);
+
+// Handles the input to jobs() and controls the output displayed by jobs()
+void jobsHandler(char *args[], int argc);
+
 #endif

@@ -1,6 +1,68 @@
 #include "../header_files/util_variables.h"
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
+
+// Function to read previous session commands from external file
+void initHistory()
+{
+    // Opening file if it exists in the directory of the executable
+    char path[MAX_PATH_LENGTH + 101] = "";
+    readlink("/proc/self/exe", path, MAX_PATH_LENGTH + 101);
+    int pos = strlen(path) - 1;
+    for (; pos >= 0 && path[pos] != '/'; pos--)
+        ;
+    path[pos + 1] = '\0';
+    strcat(path, "history.txt");
+
+    FILE *fp = fopen(path, "r");
+
+    if (fp == NULL)
+        return;
+
+    // Reading each line (command) from the line and storing it in a circular queue
+    while (fgets(HISTORY[HISTORYNO], sizeof(HISTORY[HISTORYNO]), fp) != NULL)
+    {
+        HISTORY[HISTORYNO][strlen(HISTORY[HISTORYNO]) - 1] = '\0';
+        ++HISTORYNO;
+
+        if (FRONT == -1)
+            FRONT = REAR = 0;
+        else
+            ++REAR;
+    }
+
+    fclose(fp);
+}
+
+// Function to save current session's history to external file
+void saveHistory()
+{
+    // Opening file if it exists, else creating it
+    char path[MAX_PATH_LENGTH + 101] = "";
+    readlink("/proc/self/exe", path, MAX_PATH_LENGTH + 101);
+    int pos = strlen(path) - 1;
+    for (; pos >= 0 && path[pos] != '/'; pos--)
+        ;
+    path[pos + 1] = '\0';
+    strcat(path, "history.txt");
+
+    FILE *fp = fopen(path, "w");
+
+    // Writing each command to the file
+    if (REAR >= FRONT)
+        for (int i = FRONT; i <= REAR; i++)
+            fprintf(fp, "%s\n", HISTORY[i]);
+    else
+    {
+        for (int i = FRONT; i < 20; i++)
+            fprintf(fp, "%s\n", HISTORY[i]);
+        for (int i = 0; i <= REAR; i++)
+            fprintf(fp, "%s\n", HISTORY[i]);
+    }
+
+    fclose(fp);
+}
 
 // Function to add command to history
 void addToHistory(char *command)

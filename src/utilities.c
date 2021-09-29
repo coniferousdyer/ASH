@@ -54,99 +54,6 @@ void DeleteProcess(int pid, char nameString[])
         }
 }
 
-/*---------------------------------------------------------------*
- * Function to read previous session commands from external file *
- *---------------------------------------------------------------*/
-void initHistory()
-{
-    // Opening file if it exists in the directory of the executable
-    char path[MAX_PATH_LENGTH + 101] = "";
-    readlink("/proc/self/exe", path, MAX_PATH_LENGTH + 101);
-    int pos = strlen(path) - 1;
-    for (; pos >= 0 && path[pos] != '/'; pos--)
-        ;
-    path[pos + 1] = '\0';
-    strcat(path, "history.txt");
-
-    FILE *fp = fopen(path, "r");
-
-    if (fp == NULL)
-        return;
-
-    // Reading each line (command) from the line and storing it in a circular queue
-    while (fgets(HISTORY[HISTORYNO], sizeof(HISTORY[HISTORYNO]), fp) != NULL)
-    {
-        HISTORY[HISTORYNO][strlen(HISTORY[HISTORYNO]) - 1] = '\0';
-        ++HISTORYNO;
-
-        if (FRONT == -1)
-            FRONT = REAR = 0;
-        else
-            ++REAR;
-    }
-
-    fclose(fp);
-}
-
-/*-------------------------------------------------------------*
- * Function to save current session's history to external file *
- *-------------------------------------------------------------*/
-void saveHistory()
-{
-    // Opening file if it exists, else creating it
-    char path[MAX_PATH_LENGTH + 101] = "";
-    readlink("/proc/self/exe", path, MAX_PATH_LENGTH + 101);
-    int pos = strlen(path) - 1;
-    for (; pos >= 0 && path[pos] != '/'; pos--)
-        ;
-    path[pos + 1] = '\0';
-    strcat(path, "history.txt");
-
-    FILE *fp = fopen(path, "w");
-
-    // Writing each command to the file
-    if (REAR >= FRONT)
-        for (int i = FRONT; i <= REAR; i++)
-            fprintf(fp, "%s\n", HISTORY[i]);
-    else
-    {
-        for (int i = FRONT; i < 20; i++)
-            fprintf(fp, "%s\n", HISTORY[i]);
-        for (int i = 0; i <= REAR; i++)
-            fprintf(fp, "%s\n", HISTORY[i]);
-    }
-
-    fclose(fp);
-}
-
-/*-----------------------------------------------------*
- * The signal handler which reaps background processes *
- *-----------------------------------------------------*/
-void signalHandler(int signal)
-{
-    int STATUS, pid;
-
-    // Waiting for background processes to terminate
-    while ((pid = waitpid(-1, &STATUS, WNOHANG)) > 0)
-    {
-        if (pid > 0)
-        {
-            // Deleting the process from the process list and obtaining its name
-            char name[MAX_FILE_LENGTH + 1];
-            DeleteProcess(pid, name);
-
-            if (WIFEXITED(STATUS))
-                fprintf(stderr, "\n%s with pid %d exited normally.\n", name, pid);
-            else if (WIFSIGNALED(STATUS))
-                fprintf(stderr, "\n%s with pid %d exited abnormally.\n", name, pid);
-
-            // Displaying the prompt
-            displayPrompt();
-            fflush(stdout);
-        }
-    }
-}
-
 /*-------------------------------------------------------------------------*
  * Function to obtain input from user and format it to give us the command *
  *-------------------------------------------------------------------------*/
@@ -417,6 +324,11 @@ void execCommand(char *args[], int argc)
 
         return;
     }
+    else if (strcmp(args[0], "jobs") == 0)
+    {
+        jobsHandler(args, argc);
+        return;
+    }
 
     /*-----------SYSTEM COMMANDS-----------*/
 
@@ -455,7 +367,11 @@ void execCommand(char *args[], int argc)
 
         // Wait for the child process to terminate if not a background process
         if (strcmp(args[argc - 1], "&") != 0)
+        {
+            FGPID = pid;
             waitpid(pid, &STATUS, 0);
+            FGPID = -2;
+        }
         else
         {
             if (CHILDNO == MAX_CHILD_NO)
@@ -586,6 +502,12 @@ void takeInput()
                     INPUTSTRING[--len] = '\0';
                     printf("\b \b");
                 }
+            }
+            // If Ctrl + D was pressed
+            else if (c == 4)
+            {
+                printf("\n");
+                exit(0);
             }
         }
         else

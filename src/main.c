@@ -1,4 +1,5 @@
 #include "header_files/utilities.h"
+#include "header_files/commands.h"
 #include "header_files/util_variables.h"
 #include <stdio.h>
 #include <string.h>
@@ -6,7 +7,8 @@
 #include <signal.h>
 #include <termios.h>
 
-// Important global strings
+// Important global variables
+int SHELLPID;
 char HOSTNAME[HOST_NAME_MAX + 1];
 char USERNAME[LOGIN_NAME_MAX + 1];
 char INPUTSTRING[MAX_COMMAND_LENGTH + 1];
@@ -20,12 +22,13 @@ char HISTORY[20][MAX_COMMAND_LENGTH + 1];
 int HISTORYNO = 0;
 int REAR = -1, FRONT = -1;
 struct termios ORIG_TERMIOS;
+int FGPID = -2;
 
 int main(void)
 {
-    // Registering the signal handler for background processes
-    signal(SIGCHLD, signalHandler);
-
+    // Registering the signal handler functions
+    installSignals();
+ 
     // The array containing the command-line arguments entered
     char *args[MAX_ARG_NO + 1];
 
@@ -34,6 +37,7 @@ int main(void)
     gethostname(HOSTNAME, HOST_NAME_MAX + 1);
     getcwd(PREVIOUSPATH, MAX_PATH_LENGTH + 1);
     getcwd(HOME, MAX_PATH_LENGTH + 1);
+    SHELLPID = getpid();
 
     // Initializing the history
     initHistory();
