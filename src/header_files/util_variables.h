@@ -4,6 +4,7 @@
 // Defining a struct containing process information
 typedef struct Process
 {
+    int jobNo;
     int pid;
     char *pName;
 } Process;

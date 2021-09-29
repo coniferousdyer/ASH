@@ -26,6 +26,10 @@ _Bool isInteger(char *str)
 void InsertProcess(int pid, char *pName)
 {
     // Copying the pid and name to the array
+    if (CHILDNO == 0)
+        PROCESSLIST[CHILDNO].jobNo = 1;
+    else
+        PROCESSLIST[CHILDNO].jobNo = PROCESSLIST[CHILDNO - 1].jobNo + 1;
     PROCESSLIST[CHILDNO].pid = pid;
     PROCESSLIST[CHILDNO].pName = (char *)malloc(strlen(pName) + 1);
     strcpy(PROCESSLIST[CHILDNO].pName, pName);

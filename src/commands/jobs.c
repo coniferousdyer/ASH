@@ -6,6 +6,7 @@
 
 typedef struct bgProcess
 {
+    int jobNo;
     char *pName;
     int pid;
     char state;
@@ -14,8 +15,8 @@ typedef struct bgProcess
 // Function to compare two Process structs based on command names
 int compare(const void *A, const void *B)
 {
-    bgProcess *pA = (bgProcess *)A;
-    bgProcess *pB = (bgProcess *)B;
+    const bgProcess *pA = (bgProcess *)A;
+    const bgProcess *pB = (bgProcess *)B;
     return strcmp(pA->pName, pB->pName);
 }
 
@@ -45,7 +46,8 @@ void jobs(int param)
             FILE *fp2 = fopen(processName, "r");
             fgets(processName, MAX_PATH_LENGTH, fp2);
 
-            // Copying command name and pid to processList
+            // Copying job number, state, command name and pid to processList
+            processList[count].jobNo = PROCESSLIST[i].jobNo;
             processList[count].pName = (char *)malloc(strlen(processName) + 1);
             strcpy(processList[count].pName, processName);
             processList[count].pid = PROCESSLIST[i].pid;
@@ -59,12 +61,12 @@ void jobs(int param)
     }
 
     // Sorting the list according to command name in alphabetical order
-    qsort(processList, count, sizeof(Process), compare);
+    qsort(processList, count, sizeof(bgProcess), compare);
 
     // Printing the jobs
     for (int i = 0; i < count; i++)
     {
-        printf("[%d] %s %s [%d]\n", i + 1, (processList[i].state == 'R' ? "Running" : "Stopped"), processList[i].pName, processList[i].pid);
+        printf("[%d] %s %s [%d]\n", processList[i].jobNo, (processList[i].state == 'R' ? "Running" : "Stopped"), processList[i].pName, processList[i].pid);
         free(processList[i].pName);
     }
 }
