@@ -85,4 +85,7 @@ void jobsHandler(char *args[], int argc);
 // Function to bring a background process to the foreground
 void fg(int jobNo);
 
+// Function to bring a foreground process to the background
+void bg(int jobNo);
+
 #endif

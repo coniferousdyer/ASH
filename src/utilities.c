@@ -389,6 +389,30 @@ void execCommand(char *args[], int argc)
 
         return;
     }
+    else if (strcmp(args[0], "bg") == 0)
+    {
+        if (argc > 2)
+        {
+            perror("Too many arguments specified");
+            return;
+        }
+        else if (argc < 2)
+        {
+            perror("Too less arguments specified");
+            return;
+        }
+
+        if (!isInteger(args[1]))
+        {
+            perror("Invalid argument specified");
+            return;
+        }
+
+        int jobNo = atoi(args[1]);
+        bg(jobNo);
+
+        return;
+    }
 
     /*-----------SYSTEM COMMANDS-----------*/
 
