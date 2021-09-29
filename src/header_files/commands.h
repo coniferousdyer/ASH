@@ -82,4 +82,7 @@ void jobs(int param);
 // Handles the input to jobs() and controls the output displayed by jobs()
 void jobsHandler(char *args[], int argc);
 
+// Function to bring a background process to the foreground
+void fg(int jobNo);
+
 #endif
