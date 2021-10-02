@@ -88,4 +88,7 @@ void fg(int jobNo);
 // Function to bring a foreground process to the background
 void bg(int jobNo);
 
+// Function to execute the corresponding command
+void execCommand(char *args[], int argc);
+
 #endif
