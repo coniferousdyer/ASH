@@ -88,6 +88,9 @@ void fg(int jobNo);
 // Function to bring a foreground process to the background
 void bg(int jobNo);
 
+// Implementation of the replay command
+void replay(char *args[], int argc);
+
 // Function to execute the corresponding command
 void execCommand(char *args[], int argc);
 

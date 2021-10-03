@@ -376,6 +376,18 @@ skip:;
 
         goto close_files;
     }
+    else if (strcmp(args[0], "replay") == 0)
+    {
+        if (argc == 1)
+        {
+            perror("Too less arguments specified");
+            goto close_files;
+        }
+
+        replay(args, argc);
+
+        goto close_files;
+    }
 
     /*-----------SYSTEM COMMANDS-----------*/
 
