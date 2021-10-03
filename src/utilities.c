@@ -351,32 +351,97 @@ void tokenizeAndExec(char *args[])
         // Parsing the string entered to get a proper string that can be tokenized
         parseInput(command, COMMANDSTRING);
 
+        // Counting the number of piped commands
+        int pipeCount = 1;
+        for (int i = 0; i < strlen(COMMANDSTRING); i++)
+            if (COMMANDSTRING[i] == '|')
+                pipeCount++;
+
         // The number of command-line arguments
-        int argc = 0;
+        int p = 0;
         _Bool space = 0, Echo = 0;
-        char CommandStringCopy[strlen(COMMANDSTRING) + 1];
+        char pipedCommands[pipeCount][strlen(COMMANDSTRING) + 1];
 
-        // Tokenizing the command
-        char *token = strtok(COMMANDSTRING, " ");
-        while (token != NULL)
+        char *pipeSeparator = strtok(COMMANDSTRING, "|");
+        while (pipeSeparator != NULL)
         {
-            args[argc] = token;
-            ++argc;
-            token = strtok(NULL, " ");
-
-            // Checking if the number of arguments exceeds the maximum possible number
-            if (argc >= MAX_ARG_NO)
-            {
-                perror("Maximum number of arguments exceeded");
-                return;
-            }
+            strcpy(pipedCommands[p], pipeSeparator);
+            pipeSeparator = strtok(NULL, "|");
+            p++;
         }
 
-        // Null-terminating the array
-        args[argc] = NULL;
+        // Array storing the virtual file descriptors to be written to for each piped command
+        int pipeDescriptors[pipeCount - 1][2];
+        for (int i = 0; i < pipeCount - 1; i++)
+            if (pipe(pipeDescriptors[i]) < 0)
+            {
+                perror("Piping error");
+                return;
+            }
 
-        // Executing the command
-        execCommand(args, argc);
+        p = 0;
+        // Storing original file descriptors
+        int origSTDIN = dup(STDIN_FILENO);
+        int origSTDOUT = dup(STDOUT_FILENO);
+
+        for (int i = 0; i < pipeCount; i++)
+        {
+            // Number of arguments in the command
+            int argc = 0;
+
+            // Tokenizing the command
+            char *token = strtok(pipedCommands[i], " ");
+            while (token != NULL)
+            {
+                args[argc] = token;
+                ++argc;
+                token = strtok(NULL, " ");
+
+                // Checking if the number of arguments exceeds the maximum possible number
+                if (argc >= MAX_ARG_NO)
+                {
+                    perror("Maximum number of arguments exceeded");
+                    goto close_files;
+                }
+            }
+
+            // Null-terminating the array
+            args[argc] = NULL;
+
+            // Setting the virtual files to be piped to
+            if (p == pipeCount - 1)
+                dup2(origSTDOUT, STDOUT_FILENO);
+            else if (p < pipeCount - 1)
+                if (dup2(pipeDescriptors[p][1], STDOUT_FILENO) < 0)
+                {
+                    perror("Piping error");
+                    goto close_files;
+                }
+
+            if (p > 0)
+                if (dup2(pipeDescriptors[p - 1][0], STDIN_FILENO) < 0)
+                {
+                    perror("Piping error");
+                    goto close_files;
+                }
+
+            // Closing the dup'd pipes
+            if (p > 0)
+                close(pipeDescriptors[p - 1][0]);
+            if (p < pipeCount - 1)
+                close(pipeDescriptors[p][1]);
+
+            // Executing the command
+            execCommand(args, argc);
+            p++;
+        }
+
+    close_files:
+        // Resetting original file descriptors in case
+        dup2(origSTDIN, STDIN_FILENO);
+        dup2(origSTDOUT, STDOUT_FILENO);
+        close(origSTDIN);
+        close(origSTDOUT);
 
         // Moving command pointer to next command
         command = INPUTSTRING + semicolonPos;

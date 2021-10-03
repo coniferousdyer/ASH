@@ -1,20 +1,20 @@
+ls | wc
 exit
-ls -a
+ls | wc
+cat src/main.c | head -7
+ls -al | grep "a" | wc
+ls -al | grep "a"
 exit
-ls > 1.txt > 2.txt
+ls
+ls -al
+cat src | wc
 exit
-ls >> 1.txt
-ls > 1.txt
-rm 1.txt
+ls | wc
 exit
-ls > 1.txt 2.txt
-cat < src/main.c 2.txt
-sort < src/main.c 2.txt > 1.txt 3.txt
+ls | wc
 exit
-ls > 1.txt 2.txt > 3.txt
+ls | wc
 exit
-cat < src/utilities.c src/main.c
-clear
-exit
-ls > 1.txt
+ls | wc
+ls | wc | grep 5
 exit
