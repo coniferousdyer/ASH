@@ -1,15 +1,3 @@
-ls | wc
-exit
-ls | wc
-cat src/main.c | head -7
-ls -al | grep "a" | wc
-ls -al | grep "a"
-exit
-ls
-ls -al
-cat src | wc
-exit
-ls | wc
 exit
 ls | wc
 exit
@@ -17,4 +5,16 @@ ls | wc
 exit
 ls | wc
 ls | wc | grep 5
+exit
+ls | wc
+ls -al | wc
+ls | wc | head -7
+ls | grep *.txt > out.txt
+ls | grep *.txt
+ls | wc > out.txt
+ls | wc
+rm out.txt
+clear
+cat < src/main.c | wc -l  > lines.txt
+rm lines.txt
 exit
