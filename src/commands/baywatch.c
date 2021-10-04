@@ -50,6 +50,29 @@ void bw_interrupt(int interval)
     fclose(fp);
 }
 
+// Function to print the size of dirty memory
+void bw_dirty(int interval)
+{
+    FILE *fp = fopen("/proc/meminfo", "r");
+
+    if (fp == NULL)
+    {
+        perror("Error in dirty");
+        return;
+    }
+
+    char line[100], unit[5];
+    int memory;
+
+    // Reading each line
+    for (int i = 0; i < 17; i++)
+        fscanf(fp, "%*s %d %s", &memory, unit);
+
+    printf("%d %s\n", memory, unit);
+
+    fclose(fp);
+}
+
 // Implementation of the baywatch command
 void baywatch(char *args[], int argc)
 {
@@ -92,6 +115,4 @@ void baywatch(char *args[], int argc)
     int interval = atoi(args[intervalPos]);
 
     //////////////////////////////
-
-    
 }
