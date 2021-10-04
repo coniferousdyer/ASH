@@ -91,6 +91,15 @@ void bg(int jobNo);
 // Implementation of the replay command
 void replay(char *args[], int argc);
 
+// Function to print the most recently created PID
+void bw_newborn(int interval);
+
+// Function to print the number of times the CPUs have been interrupted by the keyboard controller (i8042 with IRQ 1)
+void bw_interrupt(int interval);
+
+// Implementation of the baywatch command
+void baywatch(char *args[], int argc);
+
 // Function to execute the corresponding command
 void execCommand(char *args[], int argc);
 

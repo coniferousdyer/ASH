@@ -10,7 +10,7 @@
 // Implementation of the replay command
 void replay(char *args[], int argc)
 {
-    char commandPos = -1, periodPos = -1, intervalPos = -1;
+    int commandPos = -1, periodPos = -1, intervalPos = -1;
 
     // Searching for the positions of the arguments
     for (int i = 1; i < argc - 1; i++)
@@ -20,11 +20,6 @@ void replay(char *args[], int argc)
             intervalPos = i + 1;
         else if (strcmp(args[i], "-period") == 0)
             periodPos = i + 1;
-        else if (args[i][0] == '-')
-        {
-            perror("Invalid flag entered");
-            return;
-        }
 
     // If one of the arguments was not found
     if (commandPos == -1)
@@ -43,7 +38,7 @@ void replay(char *args[], int argc)
         return;
     }
 
-    // If natural numbers were not provided as arguments for period and interval
+    // If whole numbers were not provided as arguments for period and interval
     if (!isInteger(args[periodPos]))
     {
         perror("Invalid period entered");
@@ -64,7 +59,7 @@ void replay(char *args[], int argc)
     // Counting number of command arguments
     int argCount = 0;
     for (int i = commandPos; i < argc; i++, argCount++)
-        if (args[i][0] == '-')
+        if (strcmp(args[i], "-command") == 0 || strcmp(args[i], "-interval") == 0 || strcmp(args[i], "-period") == 0)
             break;
 
     // If no command arguments were found

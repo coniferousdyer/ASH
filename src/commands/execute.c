@@ -388,6 +388,23 @@ skip:;
 
         goto close_files;
     }
+    else if (strcmp(args[0], "baywatch") == 0)
+    {
+        if (argc < 4)
+        {
+            perror("Too less arguments specified");
+            goto close_files;
+        }
+        else if (argc > 4)
+        {
+            perror("Too many arguments specified");
+            goto close_files;
+        }
+
+        baywatch(args, argc);
+
+        goto close_files;
+    }
 
     /*-----------SYSTEM COMMANDS-----------*/
 
