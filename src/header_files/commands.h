@@ -97,6 +97,9 @@ void bw_newborn(int interval);
 // Function to print the number of times the CPUs have been interrupted by the keyboard controller (i8042 with IRQ 1)
 void bw_interrupt(int interval);
 
+// Function to print the size of dirty memory
+void bw_dirty(int interval);
+
 // Implementation of the baywatch command
 void baywatch(char *args[], int argc);
 
