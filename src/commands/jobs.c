@@ -39,7 +39,7 @@ void jobs(int param)
         fscanf(fp1, "%*d %*s %c", &state);
 
         // Checking flags
-        if (param == 0 || (param == 1 && state == 'R') || (param == 2 && (state == 'S' || state == 'T')))
+        if (param == 0 || (param == 1 && (state == 'S' || state == 'R')) || (param == 2 && state == 'T'))
         {
             // Checking /proc/pid/cmdline to check command name
             char processName[MAX_PATH_LENGTH + 1];
@@ -67,7 +67,7 @@ void jobs(int param)
     // Printing the jobs
     for (int i = 0; i < count; i++)
     {
-        printf("[%d] %s %s [%d]\n", processList[i].jobNo, (processList[i].state == 'R' ? "Running" : "Stopped"), processList[i].pName, processList[i].pid);
+        printf("[%d] %s %s [%d]\n", processList[i].jobNo, (processList[i].state == 'T' ? "Stopped" : "Running"), processList[i].pName, processList[i].pid);
         free(processList[i].pName);
     }
 }
