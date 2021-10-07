@@ -34,7 +34,21 @@ void pinfo(pid_t pid)
 
     // Checking if process is a foreground or background process
     if (pgpid == fgpid)
-        printf("+\n");
+    {
+        pid_t processPID = -1;
+        for (int i = 0; i < CHILDNO; i++)
+            if (PROCESSLIST[i].pid == pid)
+            {
+                processPID = PROCESSLIST[i].pid;
+                break;
+            }
+
+        // If process was not found in background process array
+        if (processPID == -1)
+            printf("+\n");
+        else
+            printf("\n");
+    }
     else
         printf("\n");
 
