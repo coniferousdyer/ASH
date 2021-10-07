@@ -94,7 +94,7 @@ void bw_interrupt(int interval)
     // Reading the heading
     fgets(line, sizeof(line), fp);
     line[strlen(line) - 1] = '\0';
-    printf("%s\n", line + 12);
+    printf("%s\n", line + 6);
     fclose(fp);
 
     while (key != 'q' && key != 'Q')
@@ -119,8 +119,13 @@ void bw_interrupt(int interval)
         for (int i = 0; i < 3; i++)
             fgets(line, sizeof(line), fp);
 
-        line[95] = '\0';
-        printf("%s\n", line + 12);
+        int endPos = 7;
+        for (; endPos < strlen(line); endPos++)
+            if (line[endPos] != ' ' && line[endPos] > '9')
+                break;
+
+        line[endPos] = '\0';
+        printf("%s\n", line + 6);
         fclose(fp);
     }
 
