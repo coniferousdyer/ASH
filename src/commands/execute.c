@@ -445,7 +445,7 @@ skip:;
         if (strcmp(args[argc - 1], "&") != 0)
         {
             FGPID = pid;
-            waitpid(pid, &STATUS, 0);
+            waitpid(pid, &STATUS, WUNTRACED);
             FGPID = -2;
         }
         else
@@ -454,7 +454,7 @@ skip:;
             {
                 perror("Maximum number of background processes reached");
                 fprintf(stderr, "The process is being executed as a foreground process.\n");
-                waitpid(pid, &STATUS, 0);
+                waitpid(pid, &STATUS, WUNTRACED);
                 goto close_files;
             }
 

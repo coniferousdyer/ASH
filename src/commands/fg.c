@@ -42,7 +42,7 @@ void fg(int jobNo)
     kill(pid, SIGCONT);
 
     // Waiting for the process to end
-    waitpid(pid, &STATUS, 0);
+    waitpid(pid, &STATUS, WUNTRACED);
     FGPID = -2;
 
     // Changing the foreground process group back to that of the shell

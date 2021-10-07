@@ -58,21 +58,13 @@ void sigtstpHandler(int sig)
 
     FILE *fp = fopen(processName, "r");
     fgets(processName, MAX_PATH_LENGTH, fp);
-    printf("%s\n", processName); ////
     fclose(fp);
 
-    // Stopping the process and adding it to background process array
+    // Adding process to background process array
     InsertProcess(FGPID, processName);
+
+    // Sending the foreground process a SIGTSTP signal
     kill(FGPID, SIGTSTP);
-
-    if (setpgid(FGPID, 0) == -1)
-        perror("ERROR"); ////
-
-    // printf("FG: %d\n", tcgetpgrp(STDIN_FILENO)); ////
-    // printf("PROC: %d\n", getpgid(FGPID)); ////
-    // printf("PROCshell: %d\n", getpgid(SHELLPID)); ////
-
-    kill(FGPID, SIGCONT);
 
     FGPID = -2;
     signal(SIGTSTP, sigtstpHandler);
@@ -94,7 +86,25 @@ void sig(int jobNo, int sig)
     if (pid == -1)
         perror("Process not found");
     else
-        kill(pid, sig);
+    {
+        char state;
+
+        char fileName[25];
+        sprintf(fileName, "/proc/%d/stat", pid);
+
+        FILE *fp = fopen(fileName, "r");
+
+        // Getting state
+        fscanf(fp, "%*d %*s %c", &state);
+
+        // Sending signal only if process is running or suspended
+        if (state == 'R' || state == 'S')
+            kill(pid, sig);
+        else
+            perror("Process not running/suspended");
+
+        fclose(fp);
+    }
 }
 
 // Sets up the required signal handler functions
