@@ -43,6 +43,14 @@ void fg(int jobNo)
 
     // Waiting for the process to end
     waitpid(pid, &STATUS, WUNTRACED);
+
+    // If process was stopped and not terminated
+    if (WIFSTOPPED(STATUS))
+    {
+        // Adding process to background process array
+        InsertProcess(FGPID, nameString);
+    }
+
     FGPID = -2;
 
     // Changing the foreground process group back to that of the shell
