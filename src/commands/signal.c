@@ -38,7 +38,11 @@ void sigintHandler(int sig)
 {
     // Checking if no foreground process is running
     if (FGPID == -2)
+    {
+        printf("^C\n");
+        displayPrompt();
         return;
+    }
 
     kill(FGPID, SIGINT);
     FGPID = -2;

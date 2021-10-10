@@ -276,7 +276,7 @@ void takeInput()
                 }
             }
             // If Ctrl + D was pressed
-            else if (c == 4)
+            else if (c == 4 && len == 0)
             {
                 printf("\n");
                 exit(0);

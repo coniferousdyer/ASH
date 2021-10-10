@@ -1,8 +1,16 @@
 # ASH - The A-SHell
 
-<b>ASH (or the A-SHell)</b> is a simple shell written in C, similar to bash. It supports several functionalities, including many bash commands.
+<b>ASH (or the A-SHell)</b> is a simple shell written in C, similar to bash. It supports several functionalities, including I/O redirection, piping, job control and many bash commands.
 
 ## Commands
+
+* `baywatch`: 
+```
+```
+
+* `bg`: 
+```
+```
 
 * `cd`: Changes the working directory of the shell.
 ```bash
@@ -19,10 +27,18 @@ echo "Hello World"
 echo Welcome to ASH
 ```
 
+* `fg`: 
+```
+```
+
 * `history`: Displays a list of the commands previously used (at most the 20 latest commands).
 ```bash
 history
 history <n> # To display last n commands used
+```
+
+* `jobs`: 
+```
 ```
 
 * `ls`: Lists the contents of a particular directory.
@@ -53,6 +69,14 @@ pwd
 * `repeat`: Executes a given command n times.
 ```bash
 repeat <n> <command>
+```
+
+* `replay`: 
+```
+```
+
+* `sig`: 
+```
 ```
 
 * <b>System Commands: </b>ASH should run many of the processes that bash can, including `gedit`, `vim`, `clear`, etc.
@@ -104,35 +128,55 @@ exit
        |
        |______commands
               |______arrow.c
+              |______baywatch.c
+              |______bg.c
               |______cd.c
               |______echo.c
+              |______execute.c
+              |______fg.c
               |______history.c
+              |______jobs.c
               |______ls.c
               |______pinfo.c
               |______pwd.c
+              |______replay.c
+              |______signal.c
               |______terminal.c
 </pre>
 
 ## Code Division
 
 * `main.c`: Contains the main() function where execution starts.
-* `utilities.c`: Contains utility functions that are either used for input processing or performing general tasks. Also contains the implementation of the `repeat` command.
+
+* `utilities.c`: Contains utility functions that are either used for input processing or performing general tasks. Also contains the implementation of the `repeat` command and the code taking care of piping.
 
 ### Header Files
 
 * `commands.h`: Contains the declarations of all the functions present in the `commands` folder.
+
 * `util_variables.h`: Contains macros and important global variables used throughout the program.
+
 * `utilities.h`: Contains the declarations of all the functions present in `utilities.c`.
 
 ### Commands
 
 * `arrow.c`: Contains the implementation of the arrow key handling, which shows previous commands.
 
+* `baywatch.c`: Contains the functions required for the implementation of the baywatch command.
+
+* `bg.c`: Contains the implementation of the bg command.
+
 * `cd.c`: Contains the functions required to change the working directory.
 
 * `echo.c`: Contains the implementation of the echo command.
 
+* `execute.c`: Contains the central function that takes care of command execution, as well as the code taking care of I/O redirection.
+
+* `fg.c`: Contains the implementation of the fg command.
+
 * `history.c`: Contains the functions required to display the history of commands used.
+
+* `jobs.c`: Contains the functions necessary to list the background jobs.
 
 * `ls.c`: Contains the functions required to list the contents of a directory.
 
@@ -140,9 +184,14 @@ exit
 
 * `pwd.c`: Contains the implementation for the pwd command.
 
+* `replay.c`: Contains the implementation of the replay command.
+
+* `signal.c`: Contains the implementation of the sig command, as well as the signal handlers used.
+
 * `terminal.c`: Contains the functions required to modify and obtain terminal attributes.
 
 ## Assumptions
 
 * 6 months is exactly equal to 15778463 seconds.
+
 * By the process name supposed to be printed when a background process exits abnormally, we mean the name of the command used to run that background process.

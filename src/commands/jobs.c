@@ -39,7 +39,7 @@ void jobs(int param)
         fscanf(fp1, "%*d %*s %c", &state);
 
         // Checking flags
-        if (param == 0 || (param == 1 && (state == 'S' || state == 'R')) || (param == 2 && state == 'T'))
+        if (param == 0 || (param == 1 && (state == 'S' || state == 'R')) || (param == 2 && state != 'R' && state != 'S'))
         {
             // Checking /proc/pid/cmdline to check command name
             char processName[MAX_PATH_LENGTH + 1];
