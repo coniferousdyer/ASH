@@ -4,12 +4,24 @@
 
 ## Commands
 
-* `baywatch`: 
-```
+* `baywatch`: A modified version of the bash command watch, that works for three specific commands: <br>
+
+1. <b>interrupt:</b> Prints the number of times the CPUs have been interrupted by the keyboard controller (i8042 with IRQ 1)
+
+2. <b>newborn:</b> Prints the PID of the most recently created process.
+
+3. <b>dirty:</b> Prints the size of the part of memory that is dirty.
+```bash
+baywatch -n <interval> interrupt
+baywatch -n <interval> newborn
+baywatch -n <interval> dirty
 ```
 
-* `bg`: 
-```
+Press <kbd>Q</kbd> to terminate the command.
+
+* `bg`: Changes the state of a stopped background job to running.
+```bash
+bg <job_number>
 ```
 
 * `cd`: Changes the working directory of the shell.
@@ -27,8 +39,9 @@ echo "Hello World"
 echo Welcome to ASH
 ```
 
-* `fg`: 
-```
+* `fg`: Brings the running/stopped background job to the foreground.
+```bash
+fg <job_number>
 ```
 
 * `history`: Displays a list of the commands previously used (at most the 20 latest commands).
@@ -37,8 +50,14 @@ history
 history <n> # To display last n commands used
 ```
 
-* `jobs`: 
-```
+* `jobs`: Prints a list of all currently running background processes spawned by the shell in alphabetical order of the command name, along with
+the job number, process ID and the state.
+```bash
+jobs
+jobs -s
+jobs -r
+jobs -rs
+jobs -s -r
 ```
 
 * `ls`: Lists the contents of a particular directory.
@@ -71,12 +90,14 @@ pwd
 repeat <n> <command>
 ```
 
-* `replay`: 
-```
+* `replay`: Executes a particular command in fixed time interval for a certain period.
+```bash
+replay -command <command> -interval <interval> -period <period>
 ```
 
-* `sig`: 
+* `sig`: Sends the signal corresponding to signal number​ to the process with the particular job number.
 ```
+sig <job_number> <signal_number>
 ```
 
 * <b>System Commands: </b>ASH should run many of the processes that bash can, including `gedit`, `vim`, `clear`, etc.

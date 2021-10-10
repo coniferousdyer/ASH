@@ -33,9 +33,15 @@ void jobs(int param)
         char state;
 
         // Checking /proc/pid/stat to check process state
-        char fileName[25];
+        char fileName[100];
         sprintf(fileName, "/proc/%d/stat", PROCESSLIST[i].pid);
         FILE *fp1 = fopen(fileName, "r");
+        if (fp1 == NULL)
+        {
+            perror("Jobs failed");
+            return;
+        }
+
         fscanf(fp1, "%*d %*s %c", &state);
 
         // Checking flags

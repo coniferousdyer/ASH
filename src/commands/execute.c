@@ -423,10 +423,11 @@ skip:;
         if (strcmp(args[argc - 1], "&") == 0)
         {
             // Setting the child process group ID to 0 to identify it as a background process
-            setpgid(0, 0);
             args[argc - 1] = NULL;
             argc--;
         }
+
+        setpgid(0, 0);
 
         // Executing the given command, replacing the address space of the child process
         if (execvp(args[0], args))
