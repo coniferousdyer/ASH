@@ -211,8 +211,18 @@ exit
 
 * `terminal.c`: Contains the functions required to modify and obtain terminal attributes.
 
+## Signal Handling
+
+* <kbd>Ctrl</kbd> + <kbd>Z</kbd> moves the foreground process to the background and stops it by sending it a SIGTSTP signal.
+
+* <kbd>Ctrl</kbd> + <kbd>C</kbd> interrupts the foreground process by sending it a SIGINT signal.
+
+* <kbd>Ctrl</kbd> + <kbd>D</kbd> logs you out of the shell.
+
 ## Assumptions
 
 * 6 months is exactly equal to 15778463 seconds.
 
 * By the process name supposed to be printed when a background process exits abnormally, we mean the name of the command used to run that background process.
+
+* If multiple files are given to the input/output redirection operators, the last one is considered.
