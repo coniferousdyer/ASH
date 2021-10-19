@@ -8,31 +8,6 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-// Function to disable raw mode
-void bw_raw_mode_off()
-{
-    if (tcsetattr(STDIN_FILENO, TCSANOW, &ORIG_TERMIOS) == -1)
-        die("tcsetattr");
-}
-
-// Function to enable raw mode for the nightswatch command specifically
-void bw_raw_mode_on()
-{
-    // Storing the current attributes of the terminal
-    if (tcgetattr(STDIN_FILENO, &ORIG_TERMIOS) == -1)
-        die("tcgetattr");
-
-    // Registering bw_raw_mode_off to be called before exiting
-    atexit(bw_raw_mode_off);
-    struct termios raw = ORIG_TERMIOS;
-
-    // Disabling ECHO and making input non-canonical
-    raw.c_lflag &= ~(ICANON | ECHO);
-
-    if (tcsetattr(STDIN_FILENO, TCSANOW, &raw) == -1)
-        die("tcsetattr");
-}
-
 // Function to print the most recently created PID
 void bw_newborn(int interval)
 {
